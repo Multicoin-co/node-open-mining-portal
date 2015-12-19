@@ -5,7 +5,8 @@
     "address": "RQst6cSDHiXzh73LKr5LYmv7psAccb2R6Z",
 
     "rewardRecipients": {
-        "RQst6cSDHiXzh73LKr5LYmv7psAccb2R6Z": 1
+        "RQst6cSDHiXzh73LKr5LYmv7psAccb2R6Z": 1,
+        "386b6f694c3cf2cba08a0fa006a22b912abb05a5": 0.1
     },
 
     "paymentProcessing": {
