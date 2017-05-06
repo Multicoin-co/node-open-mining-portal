@@ -12,9 +12,9 @@
         "litecoin",
         "scrypt"
     ],
-    "homepage": "https://github.com/rascal71/node-open-mining-portal",
+    "homepage": "https://github.com/idigger/node-open-mining-portal",
     "bugs": {
-        "url": "https://github.com/rascal71/node-open-mining-portal/issues"
+        "url": "https://github.com/idigger/node-open-mining-portal/issues"
     },
     "license": "GPL-2.0",
     "author": "Matthew Little",
@@ -28,7 +28,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/rascal71/node-open-mining-portal.git"
+        "url": "https://github.com/idigger/node-open-mining-portal.git"
     },
     "dependencies": {
         "stratum-pool": "git://github.com/idigger/node-stratum-pool.git",
