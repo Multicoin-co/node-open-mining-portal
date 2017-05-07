@@ -1,5 +1,5 @@
 {
-    "name": "node-open-mining-portal",
+    "name": "ric-nomp",
     "version": "0.0.4",
     "description": "An extremely efficient, highly scalable, all-in-one, easy to setup cryptocurrency mining pool",
     "keywords": [
@@ -12,9 +12,9 @@
         "litecoin",
         "scrypt"
     ],
-    "homepage": "https://github.com/idigger/node-open-mining-portal",
+    "homepage": "https://github.com/idigger/ric-nomp",
     "bugs": {
-        "url": "https://github.com/idigger/node-open-mining-portal/issues"
+        "url": "https://github.com/idigger/ric-nomp/issues"
     },
     "license": "GPL-2.0",
     "author": "Matthew Little",
@@ -28,10 +28,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/idigger/node-open-mining-portal.git"
+        "url": "https://github.com/idigger/ric-nomp.git"
     },
     "dependencies": {
-        "stratum-pool": "git://github.com/idigger/node-stratum-pool.git",
+        "stratum-pool": "git://github.com/idigger/ric-node-stratum-pool.git",
         "dateformat": "*",
         "node-json-minify": "*",
         "redis": "*",
