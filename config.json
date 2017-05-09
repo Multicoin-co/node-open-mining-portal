@@ -16,6 +16,7 @@
         "emitInvalidBlockHashes": false,
         "validateWorkerUsername": true,
         "tcpProxyProtocol": false,
+        "shareDiff": 5,
         "banning": {
             "enabled": true,
             "time": 600,
