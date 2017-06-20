@@ -35,7 +35,7 @@
         "dateformat": "1.0.12",
         "node-json-minify": "*",
         "redis": "0.12.1",
-        "mysql": "*",
+        "mongodb": "*",
         "async": "1.5.2",
         "express": "*",
         "body-parser": "*",
