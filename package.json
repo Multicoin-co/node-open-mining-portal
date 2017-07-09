@@ -31,22 +31,22 @@
         "url": "https://github.com/zone117x/node-open-mining-portal.git"
     },
     "dependencies": {
-        "stratum-pool": "git://github.com/zone117x/node-stratum-pool.git",
-        "dateformat": "1.0.12",
-        "node-json-minify": "*",
-        "redis": "0.12.1",
-        "mysql": "*",
-        "async": "1.5.2",
-        "express": "*",
-        "body-parser": "*",
-        "compression": "*",
-        "dot": "*",
-        "colors": "*",
-        "node-watch": "*",
-        "request": "*",
-        "nonce": "*",
-        "bignum": "0.12.5",
-        "extend": "*"
+        "async": "^2.5.0",
+        "bignum": "^0.12.5",
+        "body-parser": "^1.17.2",
+        "colors": "^1.1.2",
+        "compression": "^1.6.2",
+        "dateformat": "^2.0.0",
+        "dot": "^1.1.2",
+        "express": "^4.15.3",
+        "extend": "^3.0.1",
+        "mysql": "^2.13.0",
+        "node-json-minify": "^1.0.0",
+        "node-watch": "^0.5.5",
+        "nonce": "^1.0.4",
+        "redis": "^2.7.1",
+        "request": "^2.81.0",
+        "stratum-pool": "file:../node-stratum-pool"
     },
     "engines": {
         "node": ">=0.10"
