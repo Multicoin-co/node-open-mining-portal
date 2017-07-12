@@ -143,6 +143,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
 
     var processPayments = function () {
 
+        console.log("NOMP->paymentProcessor: ProcessPayments called");
+
         var startPaymentProcess = Date.now();
 
         var timeSpentRPC = 0;
@@ -200,6 +202,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
             /* Does a batch rpc call to daemon with all the transaction hashes to see if they are confirmed yet.
                It also adds the block reward amount to the round object - which the daemon gives also gives us. */
             function (workers, rounds, callback) {
+
+                console.log("NOMP->paymentProcessor: second function in waterfall");
 
                 var batchRPCcommand = rounds.map(function (r) {
                     return ['gettransaction', [r.txHash]];
@@ -305,6 +309,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                amount owned to each miner for each round. */
             function (workers, rounds, addressAccount, callback) {
 
+                console.log("NOMP->paymentProcessor: Third function in waterfall");
+
 
                 var shareLookups = rounds.map(function (r) {
                     return ['hgetall', coin + ':shares:round' + r.height]
@@ -367,6 +373,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
              */
             function (workers, rounds, addressAccount, callback) {
 
+                console.log("NOMP->paymentProcessor: Fourth Method in waterfall called");
+
                 var trySend = function (withholdPercent) {
                     var addressAmounts = {};
                     var totalSent = 0;
@@ -421,6 +429,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
 
             },
             function (workers, rounds, callback) {
+
+                console.log("NOMP->paymentProcessor: Fifth method in waterfall called");
 
                 var totalPaid = 0;
 
@@ -520,6 +530,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
             }
 
         ], function () {
+
+            console.log("NOMP->paymentProcessor: Last Method in waterfall called");
 
             var paymentProcessTime = Date.now() - startPaymentProcess;
             logger.debug(logSystem, logComponent, 'Finished interval - time spent: '

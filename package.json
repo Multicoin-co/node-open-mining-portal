@@ -35,7 +35,7 @@
         "bignum": "^0.12.5",
         "body-parser": "^1.17.2",
         "colors": "^1.1.2",
-        "compression": "^1.6.2",
+        "compression": "^1.7.0",
         "dateformat": "^2.0.0",
         "dot": "^1.1.2",
         "express": "^4.15.3",
@@ -49,6 +49,6 @@
         "stratum-pool": "git://github.com/krisklosterman/node-stratum-pool.git"
     },
     "engines": {
-        "node": ">=0.10"
+        "node": ">=8.1.4"
     }
 }
