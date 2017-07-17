@@ -70,9 +70,6 @@ module.exports = function(logger, poolConfig){
 
         var redisCommands = [];
 
-        console.log("NOMP: shareProcessor-handleShare(): ");
-        console.log(shareData);
-
         if (isValidShare){
             redisCommands.push(['hincrbyfloat', coin + ':shares:roundCurrent', shareData.worker, shareData.difficulty]);
             redisCommands.push(['hincrby', coin + ':stats', 'validShares', 1]);
@@ -99,8 +96,6 @@ module.exports = function(logger, poolConfig){
         connection.multi(redisCommands).exec(function(err, replies){
             if (err)
                 logger.error(logSystem, logComponent, logSubCat, 'Error with share processor multi ' + JSON.stringify(err));
-
-            console.log('NOMP: shareProcessor-handleShare() - connection.multi done');
         });
 
 
