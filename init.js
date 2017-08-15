@@ -4,7 +4,6 @@ var os = require('os');
 var cluster = require('cluster');
 
 var async = require('async');
-var extend = require('extend');
 
 var PoolLogger = require('./libs/logUtil.js');
 var CliListener = require('./libs/cliListener.js');
@@ -159,10 +158,11 @@ var buildPoolConfigs = function(){
             if (!(option in poolOptions)){
                 var toCloneOption = portalConfig.defaultPoolConfigs[option];
                 var clonedOption = {};
-                if (toCloneOption.constructor === Object)
-                    extend(true, clonedOption, toCloneOption);
-                else
+                if (toCloneOption.constructor === Object) {
+                    Object.assign(clonedOption, toCloneOption);
+                } else { 
                     clonedOption = toCloneOption;
+                }
                 poolOptions[option] = clonedOption;
             }
         }
