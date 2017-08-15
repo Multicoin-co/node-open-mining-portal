@@ -126,9 +126,9 @@ module.exports = function(logger){
         } 
 
         //Functions required for Mongo Mode
-        else if (poolOptions.mongoMode && poolOptions.mongoMode.enabled) {
+        //else if (poolOptions.mongoMode && poolOptions.mongoMode.enabled) {
             //TODO: PRIORITY: Write this section
-        }
+        //}
 
         //Functions required for internal payment processing
         else{
