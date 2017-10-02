@@ -254,15 +254,13 @@ var spawnPoolWorkers = function(){
 
 
 var startCliListener = function(){
-    
-    let cliHost = '';
 
+    // For backward compatibility
+    var cliHost = '127.0.0.1';
     if (portalConfig.cliHost) {
         cliHost = portalConfig.cliHost;
-    } else {
-        // For backward compatibility
-        cliHost = '127.0.0.1';
     }
+
     var cliPort = portalConfig.cliPort;
 
     var listener = new CliListener(cliHost, cliPort);

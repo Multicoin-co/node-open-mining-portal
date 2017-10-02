@@ -12,10 +12,10 @@
     "defaultPoolConfigs": {
         "blockRefreshInterval": 5000,
         "jobRebroadcastTimeout": 55,
-        "connectionTimeout": 600,
+        "connectionTimeout": 180,
         "emitInvalidBlockHashes": false,
         "validateWorkerUsername": true,
-        "tcpProxyProtocol": false,
+        "tcpProxyProtocol": true,
         "shareDiff": 5,
         "banning": {
             "enabled": true,
