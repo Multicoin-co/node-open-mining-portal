@@ -24,7 +24,10 @@ module.exports = function(logger){
         SetupForPool(logger, poolConfigs[coin], function(setupResults){
             callback(setupResults);
         });
-    }, function(coins){
+    }
+
+    /*
+    , function(coins){
         coins.forEach(function(coin){
 
             var poolOptions = poolConfigs[coin];
@@ -38,7 +41,9 @@ module.exports = function(logger){
                 + ') and redis (' + poolOptions.redis.host + ':' + poolOptions.redis.port + ')');
 
         });
-    });
+    }
+    */
+    );
 };
 
 
