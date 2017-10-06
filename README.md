@@ -1,3 +1,7 @@
+# Some basic considerations of Blockchain, mining, pool.
+![Blockchain.Mining key concepts](https://github.com/vagabondan/ric-nomp/blob/master/Blockchain.Mining.pdf)
+![Pool probability calculator](https://github.com/vagabondan/ric-nomp/blob/master/Pool_probability_calculator.xlsx)
+
 # NOMP ![NOMP Logo](http://zone117x.github.io/node-open-mining-portal/logo.svg "NOMP Logo")
 #### Node Open Mining Portal
 
