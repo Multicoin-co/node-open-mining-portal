@@ -49,6 +49,6 @@
         "stratum-pool": "https://github.com/vagabondan/node-stratum-pool.git"
     },
     "engines": {
-        "node": ">=8.1.4"
+        "node": ">=6.11.2"
     }
 }
