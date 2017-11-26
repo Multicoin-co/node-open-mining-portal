@@ -1,3 +1,5 @@
+# Contributing
+
 # Issues
 Issues are always very welcome - after all, they are a big part of making any code better. However, there are a couple of things you can do to make the lives of the developers _much, much_ easier:
 
