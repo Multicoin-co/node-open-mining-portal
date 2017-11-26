@@ -11,7 +11,7 @@ Issues are always very welcome - after all, they are a big part of making any co
   * What are the results?
 * Which OS and OS version you are using (Windows/Linux)?
 * Which Node.js version you are using?
-* Which coin software are you using and its version?
+* Which coin software you are using and its version?
 
 When you post code, please use [Github flavored markdown](https://help.github.com/articles/github-flavored-markdown), in order to get proper syntax highlighting!
 
