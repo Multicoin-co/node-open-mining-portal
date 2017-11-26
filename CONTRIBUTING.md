@@ -8,7 +8,7 @@ Issues are always very welcome - after all, they are a big part of making any co
   * What is actually happening?
   * Post an _enough_ log samples that indicates the issue
 * Did you try to investigate the problem?
-  * What are results?
+  * What are the results?
 * Which OS and OS version you are using (Windows/Linux)?
 * Which Node.js version you are using?
 * Which coin software are you using and its version?
