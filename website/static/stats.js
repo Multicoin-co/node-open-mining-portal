@@ -54,15 +54,15 @@ function buildChartData(){
 
     for (var pool in pools){
         poolWorkerData.push({
-            key: pool,
+            key: pool.replace(/(^([a-zA-Z\p{M}]))|([ -][a-zA-Z\p{M}])/g,function(s){return s.toUpperCase()}),
             values: pools[pool].workers
         });
         poolHashrateData.push({
-            key: pool,
+            key: pool.replace(/(^([a-zA-Z\p{M}]))|([ -][a-zA-Z\p{M}])/g,function(s){return s.toUpperCase()}),
             values: pools[pool].hashrate
         });
         poolBlockData.push({
-            key: pool,
+            key: pool.replace(/(^([a-zA-Z\p{M}]))|([ -][a-zA-Z\p{M}])/g,function(s){return s.toUpperCase()}),
             values: pools[pool].blocks
         })
     }

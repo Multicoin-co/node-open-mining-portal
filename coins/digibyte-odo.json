@@ -1,0 +1,10 @@
+{
+    "name": "DigiByteTestNet - odo",
+    "symbol": "DGB",
+    "algorithm": "odo",
+    "coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
+    "peerMagic": "fac3b6da",
+    "peerMagicTestnet": "fdc8bddd",
+    "passAlgorithm": true,
+    "shapechangeInterval": 864000
+}

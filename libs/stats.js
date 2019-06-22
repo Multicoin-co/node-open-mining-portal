@@ -178,37 +178,62 @@ module.exports = function(logger, portalConfig, poolConfigs){
             Object.keys(allCoinStats).forEach(function(coin){
                 var coinStats = allCoinStats[coin];
                 coinStats.workers = {};
+                coinStats.miners = {};
                 coinStats.shares = 0;
                 coinStats.hashrates.forEach(function(ins){
                     var parts = ins.split(':');
                     var workerShares = parseFloat(parts[0]);
+                    var miner = parts[1].split('.')[0];
                     var worker = parts[1];
                     if (workerShares > 0) {
                         coinStats.shares += workerShares;
-                        if (worker in coinStats.workers)
+                        if (worker in coinStats.workers) {
                             coinStats.workers[worker].shares += workerShares;
-                        else
+                        } else {
                             coinStats.workers[worker] = {
                                 shares: workerShares,
                                 invalidshares: 0,
                                 hashrateString: null
                             };
+                        }
+
+                        if (miner in coinStats.miners) {
+                            coinStats.miners[miner].shares += workerShares;
+                        } else {
+                            coinStats.miners[miner] = {
+                                shares: workerShares,
+                                invalidshares: 0,
+                                hashrateString: null
+                            };
+                        }
                     }
                     else {
-                        if (worker in coinStats.workers)
+                        if (worker in coinStats.workers) {
                             coinStats.workers[worker].invalidshares -= workerShares; // workerShares is negative number!
-                        else
+                        } else {
                             coinStats.workers[worker] = {
                                 shares: 0,
                                 invalidshares: -workerShares,
                                 hashrateString: null
                             };
+                        }
+
+                        if (miner in coinStats.miners) {
+                            coinStats.miners[miner].invalidshares -= workerShares; // workerShares is negative number!
+                        } else {
+                            coinStats.miners[miner] = {
+                                shares: 0,
+                                invalidshares: -workerShares,
+                                hashrateString: null
+                            };
+                        }
                     }
                 });
 
                 var shareMultiplier = Math.pow(2, 32) / algos[coinStats.algorithm].multiplier;
                 coinStats.hashrate = shareMultiplier * coinStats.shares / portalConfig.website.stats.hashrateWindow;
 
+                coinStats.minerCount = Object.keys(coinStats.miners).length;
                 coinStats.workerCount = Object.keys(coinStats.workers).length;
                 portalStats.global.workers += coinStats.workerCount;
 
@@ -226,6 +251,9 @@ module.exports = function(logger, portalConfig, poolConfigs){
 
                 for (var worker in coinStats.workers) {
                     coinStats.workers[worker].hashrateString = _this.getReadableHashRateString(shareMultiplier * coinStats.workers[worker].shares / portalConfig.website.stats.hashrateWindow);
+                }
+                for (var miner in coinStats.miners) {
+                    coinStats.miners[miner].hashrateString = _this.getReadableHashRateString(shareMultiplier * coinStats.miners[miner].shares / portalConfig.website.stats.hashrateWindow);
                 }
 
                 delete coinStats.hashrates;
@@ -245,7 +273,7 @@ module.exports = function(logger, portalConfig, poolConfigs){
 
             _this.statHistory.push(portalStats);
             addStatPoolHistory(portalStats);
-
+            
             var retentionTime = (((Date.now() / 1000) - portalConfig.website.stats.historicalRetention) | 0);
 
             for (var i = 0; i < _this.statHistory.length; i++){
@@ -275,7 +303,7 @@ module.exports = function(logger, portalConfig, poolConfigs){
         var byteUnits = [ ' KH', ' MH', ' GH', ' TH', ' PH' ];
         do {
             hashrate = hashrate / 1000;
-			i++;
+            i++;
         } while (hashrate > 1000);
         return hashrate.toFixed(2) + byteUnits[i];
     };

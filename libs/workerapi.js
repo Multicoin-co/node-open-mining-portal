@@ -1,7 +1,6 @@
 var express = require('express');
 var os = require('os');
 
-
 function workerapi(listen) {
 	var _this = this;
 	var app = express();
@@ -24,7 +23,6 @@ function workerapi(listen) {
 			"lastEvents" : lastEvents
 		});
 	});
-
 
 	this.start = function (poolObj) {
 		this.poolObj = poolObj;
@@ -50,7 +48,4 @@ function workerapi(listen) {
 	}
 }
 
-
-
 module.exports = workerapi;
-

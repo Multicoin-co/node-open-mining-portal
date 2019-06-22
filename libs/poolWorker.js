@@ -32,7 +32,6 @@ module.exports = function(logger){
                 break;
 
             case 'blocknotify':
-
                 var messageCoin = message.coin.toLowerCase();
                 var poolTarget = Object.keys(pools).filter(function(p){
                     return p.toLowerCase() === messageCoin;
@@ -123,12 +122,7 @@ module.exports = function(logger){
             handlers.diff = function(workerName, diff){
                 mposCompat.handleDifficultyUpdate(workerName, diff);
             }
-        } 
-
-        //Functions required for Mongo Mode
-        //else if (poolOptions.mongoMode && poolOptions.mongoMode.enabled) {
-            //TODO: PRIORITY: Write this section
-        //}
+        }
 
         //Functions required for internal payment processing
         else{
@@ -139,28 +133,16 @@ module.exports = function(logger){
                 if (poolOptions.validateWorkerUsername !== true)
                     authCallback(true);
                 else {
-                    if (workerName.length === 40) {
-                        try {
-                            Buffer.from(workerName, 'hex');
-                            authCallback(true);
-                        }
-                        catch (e) {
-                            authCallback(false);
-                        }
-                    }
-                    else {
-                        pool.daemon.cmd('validateaddress', [workerName], function (results) {
-                            var isValid = results.filter(function (r) {
-                                if(typeof r.response == "undefined") {
-                                  console.log("validateaddress failed:", r);
-                                  return true;
-                                }
-                                return r.response.isvalid;
-                            }).length > 0;
-                            authCallback(isValid);
-                        });
-                    }
-
+                    pool.daemon.cmd('validateaddress', [String(workerName).split('.')[0]], function (results) {
+                        var isValid = results.filter(function (r) {
+                            if (typeof r.response == "undefined" || r.response == null) {
+                                console.log("validateaddress failed:", r);
+                                return true;
+                            }
+                            return r.response.isvalid;
+                        }).length > 0;
+                        authCallback(isValid);
+                    });
                 }
             };
 
@@ -186,9 +168,9 @@ module.exports = function(logger){
 
         var pool = Stratum.createPool(poolOptions, authorizeFN, logger);
         pool.on('share', function(isValidShare, isValidBlock, data){
-
+            
             var shareData = JSON.stringify(data);
-
+            
             if (data.blockHash && !isValidBlock)
                 logger.debug(logSystem, logComponent, logSubCat, 'We thought a block was found but it was rejected by the daemon, share data: ' + shareData);
 
@@ -196,18 +178,17 @@ module.exports = function(logger){
                 logger.debug(logSystem, logComponent, logSubCat, 'Block found: ' + data.blockHash + ' by ' + data.worker);
 
             if (isValidShare) {
-                if(data.shareDiff > 1000000000)
+                if(data.shareDiff > 1000000000) {
                     logger.debug(logSystem, logComponent, logSubCat, 'Share was found with diff higher than 1.000.000.000!');
-                else if(data.shareDiff > 1000000)
+                } else if(data.shareDiff > 1000000) {
                     logger.debug(logSystem, logComponent, logSubCat, 'Share was found with diff higher than 1.000.000!');
+                }
                 logger.debug(logSystem, logComponent, logSubCat, 'Share accepted at diff ' + data.difficulty + '/' + data.shareDiff + ' by ' + data.worker + ' [' + data.ip + ']' );
-
-            } else if (!isValidShare)
+            } else if (!isValidShare) {
                 logger.debug(logSystem, logComponent, logSubCat, 'Share rejected: ' + shareData);
+            }
 
-            handlers.share(isValidShare, isValidBlock, data)
-
-
+            handlers.share(isValidShare, isValidBlock, data);
         }).on('difficultyUpdate', function(workerName, diff){
             logger.debug(logSystem, logComponent, logSubCat, 'Difficulty update to diff ' + diff + ' workerName=' + JSON.stringify(workerName));
             handlers.diff(workerName, diff);

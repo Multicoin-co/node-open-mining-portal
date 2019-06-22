@@ -1,140 +1,60 @@
-<style>
-    #boxWelcome{
-        background-color: #0eafc7;
-        color: white;
-        margin: 18px;
-    }
-    #logoImg{
-        height: 285px;
-        margin: 55px;
-    }
-    #welcomeText{
-        font-size: 2.7em;
-        margin: 50px 18px 10px 18px;
-    }
-    #welcomeItems{
-        list-style-type: none;
-        font-size: 1.3em;
-        padding: 0 !important;
-        margin: 0 0 0 18px !important;
-    }
-    #welcomeItems > li{
-        margin: 30px !important;
-    }
-    #boxesLower {
-        margin: 0 9px;
-    }
-    #boxesLower > div {
-        display: flex;
-    }
-    #boxesLower > div > div {
-        flex: 1 1 auto;
-        margin: 0 9px 18px 9px;
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-    }
-    .boxLowerHeader{
-        font-size: 1.3em;
-        margin: 0 0 5px 10px;
-    }
-
-
-    #boxStatsLeft{
-        background-color: #b064e1;
-    }
-    #boxStatsRight{
-        background-color: #10bb9c;
-    }
-    .boxStats{
-        color: white;
-    }
-    .boxStatsList{
-        display: flex;
-        flex-flow: row wrap;
-        justify-content: space-around;
-        opacity: 0.77;
-        margin-bottom: 5px;
-        flex: 1 1 auto;
-        align-content: center;
-    }
-    .boxStatsList i.fa{
-        height: 15px;
-        width: 33px;
-        text-align: center;
-    }
-    .boxStatsList > div{
-        padding: 5px 20px;
-    }
-    .boxStatsList > div > div{
-        padding: 3px;
-    }
-
-
-</style>
-
-
-<div class="pure-g-r" id="boxWelcome">
-    <div class="pure-u-1-3">
-        <img id="logoImg" src="/static/logo.svg">
-    </div>
-    <div class="pure-u-2-3">
-        <div id="welcomeText">Welcome to the future of mining</div>
-        <ul id="welcomeItems">
-            <li>Low fees</li>
-            <li>High performance Node.js backend</li>
-            <li>User friendly mining client</li>
-            <li>Multi-coin / multi-pool</li>
-        </ul>
-    </div>
-</div>
-
-<div class="pure-g-r" id="boxesLower">
-
-    <div class="pure-u-1-2">
-        <div class="boxStats" id="boxStatsLeft">
-            <div class="boxLowerHeader">Global Stats</div>
-            <div class="boxStatsList">
-                {{ for(var algo in it.stats.algos) { }}
-                <div>
-                    <div><i class="fa fa-flask"></i>{{=algo}}</div>
-                    <div><i class="fa fa-users"></i><span id="statsMiners{{=algo}}">{{=it.stats.algos[algo].workers}}</span> Miners</div>
-                    <div><i class="fa fa-tachometer"></i><span id="statsHashrate{{=algo}}">{{=it.stats.algos[algo].hashrateString}}</span></div>
-                </div>
-                {{ } }}
-            </div>
+{{
+	var now = new Date().getTime();
+}}<div id="homePage">
+    <div id="boxWelcome" class="card">
+        <div id="logoImg">
+            <amp-img src="/static/logo.png" width="250" height="250" layout="responsive"></amp-img>
+        </div>
+        <div>
+            <div id="welcomeText">Welcome to the Crypto Pools</div>
+            <ul id="welcomeItems">
+                <li>Lowest Fees - only 0.1%!</li>
+                <li>Fast Payouts - sent every 0.1 coin earned!</li>
+                <li>High Performance / Availability<br>Powered by Amazon Web Services infrastructure!</li>
+                <li>More Coins and More Pools Coming Soon!</li>
+            </ul>
         </div>
     </div>
 
-    <div class="pure-u-1-2">
-        <div class="boxStats" id="boxStatsRight">
-            <div class="boxLowerHeader">Pools / Coins</div>
-            <div class="boxStatsList">
-                {{ for(var pool in it.stats.pools) { }}
-                <div>
-                    <div><i class="fa fa-dot-circle-o"></i>{{=pool}}</div>
-                    <div><i class="fa fa-users"></i><span id="statsMiners{{=pool}}">{{=it.stats.pools[pool].workerCount}}</span> Miners</div>
-                    <div><i class="fa fa-tachometer"></i><span id="statsHashrate{{=pool}}">{{=it.stats.pools[pool].hashrateString}}</span></div>
+    <div id="boxesLower">
+        <div>
+            <div class="boxStats card" id="boxStatsLeft">
+                <div class="boxLowerHeader">Global Stats</div>
+                <div class="boxStatsList">
+                  <amp-live-list id="amp-live-list-insert-algo" layout="container" data-poll-interval="60000" data-max-items-per-page="3">
+                    <button update on="tap:amp-live-list-insert-pool.update" class="ampstart-btn">New Pool Added! Click to View</button>
+                    <div items>
+                      {{ for (var i = 0, algoNames = Object.keys(it.stats.algos).sort(); i < algoNames.length; i++) { var algo = algoNames[i]; }}
+                            <div id="{{= algo.replace( / /g, '-' ) }}" data-sort-time="{{= now }}" class="poolStats">
+                        <div class="poolStat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="material"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>&nbsp;&nbsp;{{=algo}}</div>
+                        <div class="poolStat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="material"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>&nbsp;&nbsp;<span id="statsMiners{{=algo}}">{{=it.stats.algos[algo].workers}}</span>&nbsp;Miners</div>
+                        <div class="poolStat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="material"><path d="M22 9V7h-2V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H4V5h14v14zM6 13h5v4H6zm6-6h4v3h-4zM6 7h5v5H6zm6 4h4v6h-4z"/><path fill="none" d="M0 0h24v24H0zm0 0h24v24H0z"/></svg>&nbsp;&nbsp;<span id="statsHashrate{{=algo}}">{{=it.stats.algos[algo].hashrateString}}</span></div>
+                      </div>
+                      {{ } }}
+                    </div>
+                  </amp-live-list>
                 </div>
-                {{ } }}
+            </div>
+        </div>
+
+        <div>
+            <div class="boxStats card" id="boxStatsRight">
+                <div class="boxLowerHeader">Pools / Coins</div>
+                <div class="boxStatsList">
+                  <amp-live-list id="amp-live-list-insert-pool" layout="container" data-poll-interval="60000" data-max-items-per-page="3">
+                    <button update on="tap:amp-live-list-insert-pool.update" class="ampstart-btn">New Pool Added! Click to View</button>
+                    <div items>
+                      {{ for (var i = 0, poolNames = Object.keys(it.stats.pools).sort(); i < poolNames.length; i++) { var pool = poolNames[i]; }}
+                            <div id="{{=pool.replace( / /g, '-' ) }}" data-sort-time="{{= now }}" class="poolStats">
+                        <div class="poolStat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="material"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M5 8h2v8H5zm7 0H9c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h3c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1zm-1 6h-1v-4h1v4zm7-6h-3c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h3c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1zm-1 6h-1v-4h1v4z"/><path fill="none" d="M4 6h16v12H4z"/><path d="M2 4v16h20V4H2zm2 14V6h16v12H4z"/></svg>&nbsp;&nbsp;{{=pool.replace(/(^([a-zA-Z\p{M}]))|([ -][a-zA-Z\p{M}])/g,function(s){return s.toUpperCase()})}}</div>
+                        <div class="poolStat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="material"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>&nbsp;&nbsp;<span id="statsMiners{{=pool}}">{{=it.stats.pools[pool].workerCount}}</span>&nbsp;Miners</div>
+                        <div class="poolStat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="material"><path d="M22 9V7h-2V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H4V5h14v14zM6 13h5v4H6zm6-6h4v3h-4zM6 7h5v5H6zm6 4h4v6h-4z"/><path fill="none" d="M0 0h24v24H0zm0 0h24v24H0z"/></svg>&nbsp;&nbsp;<span id="statsHashrate{{=pool}}">{{=it.stats.pools[pool].hashrateString}}</span></div>
+                      </div>
+                      {{ } }}
+                    </div>
+                  </amp-live-list>
+                </div>
             </div>
         </div>
     </div>
-
 </div>
-
-<script>
-    $(function() {
-        statsSource.addEventListener('message', function (e) {
-            var stats = JSON.parse(e.data);
-            for (algo in stats.algos) {
-                $('#statsMiners' + algo).text(stats.algos[algo].workers);
-                $('#statsHashrate' + algo).text(stats.algos[algo].hashrateString);
-            }
-            for (var pool in stats.pools) {
-                $('#statsMiners' + pool).text(stats.pools[pool].workerCount);
-                $('#statsHashrate' + pool).text(stats.pools[pool].hashrateString);
-            }
-        });
-    });
-</script>

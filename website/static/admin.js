@@ -53,7 +53,7 @@ function tryLogin(){
 
 function displayMenu(pools){
     $('#poolList').after(Object.keys(pools).map(function(poolName){
-        return '<li class="poolMenuItem"><a href="#">' + poolName + '</a></li>';
+        return '<li class="poolMenuItem"><a href="#">' + poolName.replace(/(^([a-zA-Z\p{M}]))|([ -][a-zA-Z\p{M}])/g,function(s){return s.toUpperCase()}) + '</a></li>';
     }).join(''));
 }
 

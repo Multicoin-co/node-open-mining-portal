@@ -1,21 +1,4 @@
-<div>
-
-    <style>
-        #passwordForm, #adminCenter{
-            display: none;
-        }
-        #adminCenter{
-            display: flex;
-            flex-flow: row;
-        }
-        #leftMenu{
-            flex: 0 0 200px;
-        }
-        #editForm{
-            flex: 1 1 auto;
-        }
-    </style>
-
+<div id="adminPage">
     <form class="pure-form pure-form-stacked" id="passwordForm">
         <fieldset>
             <legend>Password</legend>
@@ -31,7 +14,6 @@
     </form>
 
     <div id="adminCenter">
-
         <div class="pure-menu pure-menu-open" id="leftMenu">
             <a class="pure-menu-heading">Administration</a>
             <ul>
@@ -41,10 +23,7 @@
         </div>
 
         <div id="editForm"></div>
-
     </div>
 
-
     <script src="/static/admin.js"></script>
-
 </div>

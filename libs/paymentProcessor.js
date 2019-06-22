@@ -99,7 +99,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                     logger.error(logSystem, logComponent, 'Error with payment processing daemon ' + JSON.stringify(result.error));
                     callback(true);
                 }
-                else if (!result.response || !result.response.ismine) {
+                else if (!result.response || result.response.ismine === false) {
                     logger.error(logSystem, logComponent,
                         'Daemon does not own pool address - payment processing can not be done with this daemon, '
                         + JSON.stringify(result.response));
@@ -396,33 +396,51 @@ function SetupForPool(logger, poolOptions, setupFinished) {
              when deciding the sent balance, it the difference should be -1*amount they had in db,
              if not sending the balance, the differnce should be +(the amount they earned this round)
              */
-            function (workers, rounds, addressAccount, callback) {
+            function(workers, rounds, addressAccount, callback) {
 
                 var trySend = function (withholdPercent) {
                     var addressAmounts = {};
+                    var minerTotals = {};
                     var totalSent = 0;
                     for (var w in workers) {
                         var worker = workers[w];
                         worker.balance = worker.balance || 0;
                         worker.reward = worker.reward || 0;
                         var toSend = (worker.balance + worker.reward) * (1 - withholdPercent);
-                        if (toSend >= minPaymentSatoshis) {
-                            totalSent += toSend;
-                            var address = worker.address = (worker.address || getProperAddress(w));
-                            worker.sent = addressAmounts[address] = satoshisToCoins(toSend);
-                            worker.balanceChange = Math.min(worker.balance, toSend) * -1;
+                        var address = worker.address = (worker.address || getProperAddress(w.split('.')[0]).trim());
+                        if (minerTotals[address] != null && minerTotals[address] > 0) {
+                            minerTotals[address] += toSend;
+                        } else {
+                            minerTotals[address] = toSend;
                         }
-                        else {
+                    }
+
+                    for (var w in workers) {
+                        var worker = workers[w];
+                        worker.balance = worker.balance || 0;
+                        worker.reward = worker.reward || 0;
+                        var toSend = (worker.balance + worker.reward) * (1 - withholdPercent);
+                        var address = worker.address = (worker.address || getProperAddress(w.split('.')[0]).trim());
+                        if (minerTotals[address] >= minPaymentSatoshis) {
+                            totalSent += toSend;
+                            worker.sent = satoshisToCoins(toSend);
+                            worker.balanceChange = Math.min(worker.balance, toSend) * -1;
+                            if (addressAmounts[address] != null && addressAmounts[address] > 0) {
+                                addressAmounts[address] += worker.sent;
+                            } else {
+                                addressAmounts[address] = worker.sent;
+                            }
+                        } else {
                             worker.balanceChange = Math.max(toSend - worker.balance, 0);
                             worker.sent = 0;
                         }
                     }
 
-                    if (Object.keys(addressAmounts).length === 0) {
+                    if (Object.keys(addressAmounts).length === 0){
                         callback(null, workers, rounds);
                         return;
                     }
-
+                    
                     daemon.cmd('sendmany', [addressAccount || '', addressAmounts], function (result) {
                         //Check if payments failed because wallet doesn't have enough coins to pay for tx fees
                         if (result.error && result.error.code === -6) {
@@ -563,10 +581,10 @@ function SetupForPool(logger, poolOptions, setupFinished) {
 
 
     var getProperAddress = function (address) {
-        if (address.length === 40) {
+        /*if (address.length === 40) {
             return util.addressFromEx(poolOptions.address, address);
         }
-        else return address;
+        else */return address;
     };
 
 

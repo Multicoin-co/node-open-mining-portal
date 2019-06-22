@@ -6,3 +6,6 @@ pool_configs/*.json
 docker-compose.yaml
 config/
 npm-debug.log
+/config.json
+/private-key.pem
+/signature.bin
