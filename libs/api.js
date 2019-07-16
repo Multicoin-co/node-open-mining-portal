@@ -14,13 +14,11 @@ module.exports = function(logger, portalConfig, poolConfigs){
         switch(req.params.method){
             case 'stats':
                 res.set('Content-Type', 'application/json');
-                res.set('Access-Control-Allow-Origin', '*');
                 res.set('X-Robots-Tag', 'none');
                 res.end(portalStats.statsString);
                 return;
             case 'pool_stats':
                 res.set('Content-Type', 'application/json');
-                res.set('Access-Control-Allow-Origin', '*');
                 res.set('X-Robots-Tag', 'none');
                 res.end(JSON.stringify(portalStats.statPoolHistory));
                 return;
@@ -29,7 +27,6 @@ module.exports = function(logger, portalConfig, poolConfigs){
                     'Content-Type': 'text/event-stream',
                     'Cache-Control': 'no-cache',
                     'Connection': 'keep-alive',
-                    'Access-Control-Allow-Origin': '*',
                     'X-Robots-Tag': 'none'
                 });
                 res.write('\n');

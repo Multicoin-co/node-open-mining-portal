@@ -9,6 +9,7 @@ var dot = require('dot');
 var express = require('express');
 var bodyParser = require('body-parser');
 var compress = require('compression');
+var ampCors = require('amp-toolbox-cors');
 
 var Stratum = require('stratum-pool');
 var util = require('stratum-pool/lib/util.js');
@@ -229,16 +230,8 @@ module.exports = function(logger) {
 	};
 
 	var app = express();
+	app.use(ampCors());
 	app.use(bodyParser.json());
-	app.use( function(req, res, next) {
-		if ('OPTIONS' == req.method) {
-			res.header( 'Access-Control-Allow-Origin', '*' );
-			res.header( 'Access-Control-Allow-Headers', '*' );
-			res.sendStatus( 200 );
-		} else {
-			next();
-		}
-	} );
 
 	app.get( '/donate/:coin/:address', function(req, res, next) {
 		if ( req.params.coin && req.params.address ) {
