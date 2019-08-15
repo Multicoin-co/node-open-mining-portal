@@ -266,7 +266,10 @@ module.exports = function(logger) {
 					break;
 				case 'dash':
 					protocol = 'dash';
-					break
+					break;
+				case 'xvg':
+					protocol = 'verge';
+					break;
 				default:
 					break;
 			}

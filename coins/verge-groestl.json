@@ -1,0 +1,11 @@
+{
+    "name": "Verge - groestl",
+    "symbol": "XVG",
+    "algorithm": "groestl",
+    "coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
+    "peerMagic": "f7a77eff",
+    "peerMagicTestnet": "cdf2c0ef",
+    "passAlgorithmKey": true,
+    "getInfo": true,
+    "getAllNetworkHashPS": true
+}
