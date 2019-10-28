@@ -273,6 +273,9 @@ module.exports = function(logger) {
 				case 'lcnt':
 					protocol = 'lucent';
 					break;
+				case 'shnd':
+					protocol = 'stronghands';
+					break;
 				default:
 					break;
 			}
