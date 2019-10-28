@@ -270,6 +270,9 @@ module.exports = function(logger) {
 				case 'xvg':
 					protocol = 'verge';
 					break;
+				case 'lcnt':
+					protocol = 'lucent';
+					break;
 				default:
 					break;
 			}
