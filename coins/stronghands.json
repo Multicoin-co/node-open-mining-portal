@@ -7,6 +7,7 @@
     "peerMagic": "53484e44",
     "peerMagicTestnet": "cff2c0fc",
     "version_mask": "1fffe000",
-    "noNetworkInfo": true
+    "noNetworkInfo": true,
+    "getNetworkGHPS": true
 }
 
