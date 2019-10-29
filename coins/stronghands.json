@@ -6,6 +6,7 @@
     "coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
     "peerMagic": "53484e44",
     "peerMagicTestnet": "cff2c0fc",
-    "version_mask": "1fffe000"
+    "version_mask": "1fffe000",
+    "noNetworkInfo": true
 }
 
