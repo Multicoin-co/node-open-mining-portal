@@ -669,6 +669,56 @@ module.exports = function(logger, portalConfig, poolConfigs){
 
     };
 
+    function sortPoolsByName(objects) {
+        var newObject = {};
+        var sortedArray = sortProperties(objects, 'name', false, false);
+        for (var i = 0; i < sortedArray.length; i++) {
+            var key = sortedArray[i][0];
+            var value = sortedArray[i][1];
+            newObject[key] = value;
+        }
+        return newObject;
+    }
+
+    function sortBlocks(a, b) {
+        var as = parseInt(a.split(":")[2]);
+        var bs = parseInt(b.split(":")[2]);
+        if (as > bs) return -1;
+        if (as < bs) return 1;
+        return 0;
+    }
+
+    function sortWorkersByName(objects) {
+        var newObject = {};
+        var sortedArray = sortProperties(objects, 'name', false, false);
+        for (var i = 0; i < sortedArray.length; i++) {
+            var key = sortedArray[i][0];
+            var value = sortedArray[i][1];
+            newObject[key] = value;
+        }
+        return newObject;
+    }
+
+    function sortMinersByHashrate(objects) {
+        var newObject = {};
+        var sortedArray = sortProperties(objects, 'shares', true, true);
+        for (var i = 0; i < sortedArray.length; i++) {
+            var key = sortedArray[i][0];
+            var value = sortedArray[i][1];
+            newObject[key] = value;
+        }
+        return newObject;
+    }
+
+    function sortWorkersByHashrate(a, b) {
+        if (a.hashrate === b.hashrate) {
+            return 0;
+        }
+        else {
+            return (a.hashrate < b.hashrate) ? -1 : 1;
+        }
+    }
+
     this.getReadableHashRateString = function(hashrate){
         var i = -1;
         var byteUnits = [ ' KH', ' MH', ' GH', ' TH', ' PH' ];
@@ -679,4 +729,13 @@ module.exports = function(logger, portalConfig, poolConfigs){
         return hashrate.toFixed(2) + byteUnits[i];
     };
 
+    function getReadableNetworkHashRateString(hashrate) {
+        hashrate = (hashrate * 1000000);
+        if (hashrate < 1000000)
+            return '0 Sol';
+        var byteUnits = [ ' Sol/s', ' KSol/s', ' MSol/s', ' GSol/s', ' TSol/s', ' PSol/s' ];
+        var i = Math.floor((Math.log(hashrate/1000) / Math.log(1000)) - 1);
+        hashrate = (hashrate/1000) / Math.pow(1000, i + 1);
+        return hashrate.toFixed(2) + byteUnits[i];
+    }
 };
