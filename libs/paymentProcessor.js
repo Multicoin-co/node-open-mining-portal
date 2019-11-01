@@ -346,11 +346,16 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                     txDetails.forEach(function (tx, i) {
 
                         if (i === txDetails.length - 1) {
-                            addressAccount = tx.result;
+                            if (tx.result && tx.result.toString().length > 0) {
+                                addressAccount = tx.result.toString();
+                            }
                             return;
                         }
 
                         var round = rounds[i];
+                        if (tx && tx.result) {
+                            round.confirmations = parseInt((tx.result.confirmations || 0));
+                        }
 
                         if (tx.error && tx.error.code === -5) {
                             logger.warning(logSystem, logComponent, 'Daemon reports invalid transaction: ' + round.txHash);
@@ -384,8 +389,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                         }
 
                         round.category = generationTx.category;
-                        if (round.category === 'generate') {
-                            round.reward = generationTx.amount || generationTx.value;
+                        if (round.category === 'generate' || round.category === 'immature') {
+                            round.reward = coinsRound(parseFloat(generationTx.amount || generationTx.value));
                         }
 
                     });
