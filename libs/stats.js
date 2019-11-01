@@ -425,7 +425,7 @@ module.exports = function(logger, portalConfig, poolConfigs){
                             symbol: poolConfigs[coinName].coin.symbol.toUpperCase(),
                             algorithm: poolConfigs[coinName].coin.algorithm,
                             poolFees: poolConfigs[coinName].rewardRecipients,
-                            minpay: 0.1,
+                            minimumPayment: poolConfigs[coinName].paymentProcessing.minimumPayment,
                             hashrates: replies[i + 1],
                             poolStats: {
                                 validShares: replies[i + 2] ? (replies[i + 2].validShares || 0) : 0,
