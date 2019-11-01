@@ -139,8 +139,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
             ['getdifficulty', []]
         ]
 
-        if (options.coin.noNetworkInfo) {
-            if (!options.coin.getInfo) {
+        if (poolOptions.coin.noNetworkInfo) {
+            if (!poolOptions.coin.getInfo) {
                 batchRpcCalls.push(['getinfo', []]);
             }
         } else {
@@ -176,7 +176,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                     }
                 }
 
-                if (options.coin.noNetworkInfo) {
+                if (poolOptions.coin.noNetworkInfo) {
                     rpcResults.getnetworkinfo = rpcResults.getinfo
                 }
 
