@@ -1,6 +1,6 @@
 var redis = require('redis');
 var Stratum = require('stratum-pool');
-var CreateRedisConnection = require('./createRedisClient.js');
+var CreateRedisClient = require('./createRedisClient.js');
 
 
 /*
