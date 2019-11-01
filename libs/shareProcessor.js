@@ -1,6 +1,6 @@
 var redis = require('redis');
 var Stratum = require('stratum-pool');
-
+var CreateRedisConnection = require('./createRedisClient.js');
 
 
 /*
@@ -26,7 +26,10 @@ module.exports = function(logger, poolConfig){
     var logComponent = coin;
     var logSubCat = 'Thread ' + (parseInt(forkId) + 1);
     
-    var connection = redis.createClient(redisConfig.port, redisConfig.host);
+    var connection = CreateRedisClient(redisConfig);
+    if (redisConfig.password) {
+        connection.auth(redisConfig.password);
+    }
 
     connection.on('ready', function(){
         logger.debug(logSystem, logComponent, logSubCat, 'Share processing setup with redis (' + redisConfig.host +
@@ -85,7 +88,8 @@ module.exports = function(logger, poolConfig){
 
         if (isValidBlock){
             redisCommands.push(['rename', coin + ':shares:roundCurrent', coin + ':shares:round' + shareData.height]);
-            redisCommands.push(['sadd', coin + ':blocksPending', [shareData.blockHash, shareData.txHash, shareData.height].join(':')]);
+            redisCommands.push(['rename', coin + ':shares:timesCurrent', coin + ':shares:times' + shareData.height]);
+            redisCommands.push(['sadd', coin + ':blocksPending', [shareData.blockHash, shareData.txHash, shareData.height, shareData.worker, dateNow].join(':')]);
             redisCommands.push(['hincrby', coin + ':stats', 'validBlocks', 1]);
         }
         else if (shareData.blockHash){

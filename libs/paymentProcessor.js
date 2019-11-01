@@ -5,6 +5,7 @@ var async = require('async');
 
 var Stratum = require('stratum-pool');
 var util = require('stratum-pool/lib/util.js');
+var CreateRedisClient = require('./createRedisClient.js');
 
 
 module.exports = function (logger) {
@@ -19,32 +20,6 @@ module.exports = function (logger) {
             poolOptions.paymentProcessing.enabled)
             enabledPools.push(coin);
     });
-
-
-    /*async.filter(enabledPools, function(coin, callback){
-        SetupForPool(logger, poolConfigs[coin], function(setupResults){
-            callback(setupResults);
-        });
-    }
-
-
-    , function(coins){
-        coins.forEach(function(coin){
-
-            var poolOptions = poolConfigs[coin];
-            var processingConfig = poolOptions.paymentProcessing;
-            var logSystem = 'Payments';
-            var logComponent = coin;
-
-            logger.debug(logSystem, logComponent, 'Payment processing setup to run every '
-                + processingConfig.paymentInterval + ' second(s) with daemon ('
-                + processingConfig.daemon.user + '@' + processingConfig.daemon.host + ':' + processingConfig.daemon.port
-                + ') and redis (' + poolOptions.redis.host + ':' + poolOptions.redis.port + ')');
-
-        });
-    }
-
-    );*/
 
     async.filter(enabledPools, function (coin, callback) {
         SetupForPool(logger, poolConfigs[coin], function (setupResults) {
@@ -64,7 +39,9 @@ module.exports = function (logger) {
                 logger.debug(logSystem, logComponent, 'Payment processing setup to run every '
                     + processingConfig.paymentInterval + ' second(s) with daemon ('
                     + processingConfig.daemon.user + '@' + processingConfig.daemon.host + ':' + processingConfig.daemon.port
-                    + ') and redis (' + poolOptions.redis.host + ':' + poolOptions.redis.port + ')');
+                    + ') and redis (' + ((poolOptions.redis.socket !== undefined && poolOptions.redis.socket !== '')
+                    ? poolOptions.redis.socket
+                    : (poolOptions.redis.host + ':' + poolOptions.redis.port)) + ')');
 
             });
         }
@@ -84,7 +61,10 @@ function SetupForPool(logger, poolOptions, setupFinished) {
     var daemon = new Stratum.daemon.interface([processingConfig.daemon], function (severity, message) {
         logger[severity](logSystem, logComponent, message);
     });
-    var redisClient = redis.createClient(poolOptions.redis.port, poolOptions.redis.host);
+    var redisClient = CreateRedisClient(poolOptions.redis);
+    if (poolOptions.redis.password) {
+        redisClient.auth(poolOptions.redis.password);
+    }
 
     var magnitude;
     var minPaymentSatoshis;
@@ -153,16 +133,127 @@ function SetupForPool(logger, poolOptions, setupFinished) {
         setupFinished(true);
     });
 
+    function cacheNetworkStats () {
+        var params = null;
+        var batchRpcCalls = [
+            ['getdifficulty', []]
+        ]
 
+        if (options.coin.noNetworkInfo) {
+            if (!options.coin.getInfo) {
+                batchRpcCalls.push(['getinfo', []]);
+            }
+        } else {
+            batchRpcCalls.push(['getnetworkinfo', []]);
+        }
+        batchRpcCalls.push(
+            [poolOptions.coin.getInfo ? 'getinfo' : 'getmininginfo', []],
+            [poolOptions.coin.getAllNetworkHashPS ? 'getallnetworkhashps' : poolOptions.coin.getNetworkGHPS ? 'getnetworkghps' : 'getnetworkhashps', []]
+        ]
 
+        if (poolOptions.coin.getInfo) {
+            batchRpcCalls.push(['getinfo', []], ['getallnetworkhashps', []]);
+        } else {
+            batchRpcCalls.push(['getmininginfo', []]);
+        }
+        daemon.batchCmd(batchRpcCalls,
+            function (error, results) {
+                if (error || !results){
+                    logger.error(logSystem, logComponent, 'Error with cacheNetworkStats batch RPC call: ' + JSON.stringify(error));
+                    return;
+                }
+
+                var rpcResults = {};
+
+                for (var i = 0; i < results.length; i++){
+                    var rpcCall = batchRpcCalls[i][0];
+                    var r = results[i];
+                    rpcResults[rpcCall] = r.result || r.error;
+
+                    if (r.error || !r.result){
+                        logger.error(logSystem, logComponent, 'Error with cacheNetworkResults RPC ' + rpcCall + ' - ' + JSON.stringify(r.error));
+                        return;
+                    }
+                }
+
+                if (options.coin.noNetworkInfo) {
+                    rpcResults.getnetworkinfo = rpcResults.getinfo
+                }
+
+                var coin = logComponent;
+                var multiAlgoKey = poolOptions.coin.passAlgorithmKey ? (poolOptions.coin.passAlgorithmKey !== true ? poolOptions.coin.passAlgorithmKey : poolOptions.coin.algorithm) : (poolOptions.coin.passAlgorithm && poolOptions.coin.passAlgorithm !== true ? poolOptions.coin.passAlgorithm : poolOptions.coin.algorithm);
+                var multiAlgoDifficultyKey = 'difficulty_' + multiAlgoKey;
+                var finalRedisCommands = [];
+
+                var blocks = rpcResults[poolOptions.coin.getInfo ? 'getinfo' : 'getmininginfo'].blocks
+                if (blocks !== null) {
+                    finalRedisCommands.push(['hset', coin + ':stats', 'networkBlocks', blocks]);
+                }
+
+                var difficulty = poolOptions.coin.getInfo ? (typeof rpcResults.getinfo[multiAlgoDifficultyKey] !== 'undefined' ? rpcResults.getinfo[multiAlgoDifficultyKey] : rpcResults.getinfo.difficulty) : (typeof rpcResults.getmininginfo[multiAlgoDifficultyKey] !== 'undefined' ? rpcResults.getmininginfo[multiAlgoDifficultyKey] : rpcResults.getmininginfo.difficulty);
+                if (difficulty !== null) {
+                    finalRedisCommands.push(['hset', coin + ':stats', 'networkDiff', difficulty]);
+                }
+
+                var networkhashps = poolOptions.coin.getAllNetworkHashPS ? rpcResults.getallnetworkhashps[multiAlgoKey] : poolOptions.coin.getNetworkGHPS ? (rpcResults.getnetworkghps * Math.pow(1024, 3)) : rpcResults.getnetworkhashps;
+                if (networkhashps !== null) {
+                    finalRedisCommands.push(['hset', coin + ':stats', 'networkSols', networkhashps]);
+                }
+
+                if (rpcResults.getnetworkinfo.connections !== null) {
+                    finalRedisCommands.push(['hset', coin + ':stats', 'networkConnections', rpcResults.getnetworkinfo.connections]);
+                }
+                if (rpcResults.getnetworkinfo.version !== null) {
+                    finalRedisCommands.push(['hset', coin + ':stats', 'networkVersion', rpcResults.getnetworkinfo.version]);
+                }
+                if (rpcResults.getnetworkinfo.subversion !== null) {
+                    finalRedisCommands.push(['hset', coin + ':stats', 'networkSubVersion', rpcResults.getnetworkinfo.subversion]);
+                }
+                if (rpcResults.getnetworkinfo.protocolversion !== null) {
+                    finalRedisCommands.push(['hset', coin + ':stats', 'networkProtocolVersion', rpcResults.getnetworkinfo.protocolversion]);
+                }
+
+                if (finalRedisCommands.length <= 0)
+                    return;
+
+                redisClient.multi(finalRedisCommands).exec(function(error, results){
+                    if (error){
+                        logger.error(logSystem, logComponent, 'Error with redis during call to cacheNetworkStats() ' + JSON.stringify(error));
+                        return;
+                    }
+                });
+            }
+        );
+    }
+
+    // network stats caching every 58 seconds
+    var stats_interval = 58 * 1000;
+    var statsInterval = setInterval(function() {
+        // update network stats using coin daemon
+        cacheNetworkStats();
+    }, stats_interval);
+
+    function roundTo(n, digits) {
+        if (digits === undefined) {
+            digits = 0;
+        }
+        var multiplicator = Math.pow(10, digits);
+        n = parseFloat((n * multiplicator).toFixed(11));
+        var test =(Math.round(n) / multiplicator);
+        return +(test.toFixed(digits));
+    }
 
     var satoshisToCoins = function (satoshis) {
-        return parseFloat((satoshis / magnitude).toFixed(coinPrecision));
+        return roundTo((satoshis / magnitude), coinPrecision);
     };
 
     var coinsToSatoshies = function (coins) {
-        return coins * magnitude;
+        return Math.round(coins * magnitude);
     };
+
+    function coinsRound(number) {
+        return roundTo(number, coinPrecision);
+    }
 
     /* Deal with numbers in smallest possible units (satoshis) as much as possible. This greatly helps with accuracy
        when rounding and whatnot. When we are storing numbers for only humans to see, store in whole coin units. */
@@ -215,8 +306,14 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                             blockHash: details[0],
                             txHash: details[1],
                             height: details[2],
+                            minedby: details[3],
+                            time: details[4],
                             serialized: r
                         };
+                    });
+
+                    rounds.sort(function(a, b) {
+                        return a.height - b.height;
                     });
 
                     callback(null, workers, rounds);
@@ -313,6 +410,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                             case 'orphan':
                             case 'kicked':
                                 r.canDeleteShares = canDeleteShares(r);
+                            case 'immature':
                             case 'generate':
                                 return true;
                             default:
@@ -365,7 +463,21 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                             case 'orphan':
                                 round.workerShares = workerShares;
                                 break;
+                            case 'immature':
+                                /* We found an immature block. */
+                                var reward = parseInt(round.reward * magnitude);
 
+                                var totalShares = Object.keys(workerShares).reduce(function (p, c) {
+                                    return p + parseFloat(workerShares[c])
+                                }, 0);
+
+                                for (var workerAddress in workerShares) {
+                                    var percent = parseFloat(workerShares[workerAddress]) / totalShares;
+                                    var workerImmatureTotal = Math.floor(reward * percent);
+                                    var worker = workers[workerAddress] = (workers[workerAddress] || {});
+                                    worker.immature = (worker.immature || 0) + workerImmatureTotal;
+                                }
+                                break;
                             case 'generate':
                                 /* We found a confirmed block! Now get the reward for it and calculate how much
                                    we owe each miner based on the shares they submitted during that block round. */
@@ -400,6 +512,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
 
                 var trySend = function (withholdPercent) {
                     var addressAmounts = {};
+                    var balanceAmounts = {};
+                    var shareAmounts = {};
                     var minerTotals = {};
                     var totalSent = 0;
                     for (var w in workers) {
@@ -431,14 +545,34 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                                 addressAmounts[address] = worker.sent;
                             }
                         } else {
-                            worker.balanceChange = Math.max(toSend - worker.balance, 0);
                             worker.sent = 0;
+                            worker.balanceChange = Math.max(toSend - worker.balance, 0);
+                            // track balance changes
+                            if (worker.balanceChange > 0) {
+                                if (balanceAmounts[address] != null && balanceAmounts[address] > 0) {
+                                    balanceAmounts[address] = coinsRound(balanceAmounts[address] + satoshisToCoins(worker.balanceChange));
+                                } else {
+                                    balanceAmounts[address] = satoshisToCoins(worker.balanceChange);
+                                }
+                            }
+                        }
+                        // track share work
+                        if (worker.totalShares > 0) {
+                            if (shareAmounts[address] != null && shareAmounts[address] > 0) {
+                                shareAmounts[address] += worker.totalShares;
+                            } else {
+                                shareAmounts[address] = worker.totalShares;
+                            }
                         }
                     }
 
                     if (Object.keys(addressAmounts).length === 0){
                         callback(null, workers, rounds);
                         return;
+                    }
+
+                    for (var a in addressAmounts) {
+                        addressAmounts[a] = coinsRound(addressAmounts[a]);
                     }
                     
                     daemon.cmd('sendmany', [addressAccount || '', addressAmounts], function (result) {
@@ -462,23 +596,34 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                                     + '% of reward from miners to cover transaction fees. '
                                     + 'Fund pool wallet with coins to prevent this from happening');
                             }
-                            callback(null, workers, rounds);
+
+                            // save payments data to redis
+                            var paymentBlocks = rounds.filter(function(r){ return r.category == 'generate'; }).map(function(r){
+                                return parseInt(r.height);
+                            });
+
+                            var paymentsUpdate = [];
+                            var paymentsData = {time:Date.now(), txid:result.response, shares:totalShares, paid:satoshisToCoins(totalSent),  miners:Object.keys(addressAmounts).length, blocks: paymentBlocks, amounts: addressAmounts, balances: balanceAmounts, work:shareAmounts};
+                            paymentsUpdate.push(['zadd', logComponent + ':payments', Date.now(), JSON.stringify(paymentsData)]);
+
+                            callback(null, workers, rounds, paymentsUpdate);
                         }
                     }, true, true);
                 };
                 trySend(0);
 
             },
-            function (workers, rounds, callback) {
+            function (workers, rounds, paymentsUpdate, callback) {
 
-                var totalPaid = 0;
+                var totalPaid = parseFloat(0);
 
+                var immatureUpdateCommands = [];
                 var balanceUpdateCommands = [];
                 var workerPayoutsCommand = [];
 
                 for (var w in workers) {
                     var worker = workers[w];
-                    if (worker.balanceChange !== 0) {
+                    if ((worker.balanceChange || 0) !== 0) {
                         balanceUpdateCommands.push([
                             'hincrbyfloat',
                             coin + ':balances',
@@ -486,9 +631,15 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                             satoshisToCoins(worker.balanceChange)
                         ]);
                     }
-                    if (worker.sent !== 0) {
-                        workerPayoutsCommand.push(['hincrbyfloat', coin + ':payouts', w, worker.sent]);
-                        totalPaid += worker.sent;
+                    if ((worker.sent || 0) > 0) {
+                        workerPayoutsCommand.push(['hincrbyfloat', coin + ':payouts', w, coinsRound(worker.sent)]);
+                        totalPaid = coinsRound(totalPaid + worker.sent);
+                    }
+
+                    if ((worker.immature || 0) > 0) {
+                        immatureUpdateCommands.push(['hset', coin + ':immature', w, worker.immature]);
+                    } else {
+                        immatureUpdateCommands.push(['hset', coin + ':immature', w, 0]);
                     }
                 }
 
@@ -498,27 +649,35 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                 var roundsToDelete = [];
                 var orphanMergeCommands = [];
 
+                var confirmsUpdate = [];
+                var confirmsToDelete = [];
+
                 var moveSharesToCurrent = function (r) {
                     var workerShares = r.workerShares;
-                    Object.keys(workerShares).forEach(function (worker) {
-                        orphanMergeCommands.push(['hincrby', coin + ':shares:roundCurrent',
-                            worker, workerShares[worker]]);
-                    });
+                    if (workerShares != null) {
+                        Object.keys(workerShares).forEach(function (worker) {
+                            orphanMergeCommands.push(['hincrby', coin + ':shares:roundCurrent', worker, workerShares[worker]]);
+                        });
+                    }
                 };
 
                 rounds.forEach(function (r) {
-
                     switch (r.category) {
                         case 'kicked':
                             movePendingCommands.push(['smove', coin + ':blocksPending', coin + ':blocksKicked', r.serialized]);
                         case 'orphan':
                             movePendingCommands.push(['smove', coin + ':blocksPending', coin + ':blocksOrphaned', r.serialized]);
+                            confirmsToDelete.push(['hdel', coin + ':blocksPendingConfirms', r.blockHash]);
                             if (r.canDeleteShares) {
                                 moveSharesToCurrent(r);
                                 roundsToDelete.push(coin + ':shares:round' + r.height);
                             }
                             return;
+                        case 'immature':
+                            confirmsUpdate.push(['hset', coin + ':blocksPendingConfirms', r.blockHash, (r.confirmations || 0)]);
+                            return;
                         case 'generate':
+                            confirmsToDelete.push(['hdel', coin + ':blocksPendingConfirms', r.blockHash]);
                             movePendingCommands.push(['smove', coin + ':blocksPending', coin + ':blocksConfirmed', r.serialized]);
                             roundsToDelete.push(coin + ':shares:round' + r.height);
                             return;
@@ -534,6 +693,9 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                 if (orphanMergeCommands.length > 0)
                     finalRedisCommands = finalRedisCommands.concat(orphanMergeCommands);
 
+                if (immatureUpdateCommands.length > 0)
+                    finalRedisCommands = finalRedisCommands.concat(immatureUpdateCommands);
+
                 if (balanceUpdateCommands.length > 0)
                     finalRedisCommands = finalRedisCommands.concat(balanceUpdateCommands);
 
@@ -542,6 +704,15 @@ function SetupForPool(logger, poolOptions, setupFinished) {
 
                 if (roundsToDelete.length > 0)
                     finalRedisCommands.push(['del'].concat(roundsToDelete));
+
+                if (confirmsUpdate.length > 0)
+                    finalRedisCommands = finalRedisCommands.concat(confirmsUpdate);
+
+                if (confirmsToDelete.length > 0)
+                    finalRedisCommands = finalRedisCommands.concat(confirmsToDelete);
+
+                if (paymentsUpdate.length > 0)
+                    finalRedisCommands = finalRedisCommands.concat(paymentsUpdate);
 
                 if (totalPaid !== 0)
                     finalRedisCommands.push(['hincrbyfloat', coin + ':stats', 'totalPaid', totalPaid]);

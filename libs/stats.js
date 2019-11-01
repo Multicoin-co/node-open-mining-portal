@@ -8,6 +8,50 @@ var os = require('os');
 
 var algos = require('stratum-pool/lib/algoProperties.js');
 
+var CreateRedisClient = require('./createRedisClient.js');
+
+// redis callback Ready check failed bypass trick
+function rediscreateClient(redisConfig) {
+    var client = CreateRedisClient(redisConfig);
+    if (redisConfig.password) {
+        client.auth(redisConfig.password);
+    }
+    return client;
+}
+
+/**
+ * Sort object properties (only own properties will be sorted).
+ * @param {object} obj object to sort properties
+ * @param {string|int} sortedBy 1 - sort object properties by specific value.
+ * @param {bool} isNumericSort true - sort object properties as numeric value, false - sort as string value.
+ * @param {bool} reverse false - reverse sorting.
+ * @returns {Array} array of items in [[key,value],[key,value],...] format.
+ */
+function sortProperties(obj, sortedBy, isNumericSort, reverse) {
+    sortedBy = sortedBy || 1; // by default first key
+    isNumericSort = isNumericSort || false; // by default text sort
+    reverse = reverse || false; // by default no reverse
+
+    var reversed = (reverse) ? -1 : 1;
+
+    var sortable = [];
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            sortable.push([key, obj[key]]);
+        }
+    }
+    if (isNumericSort)
+        sortable.sort(function (a, b) {
+            return reversed * (a[1][sortedBy] - b[1][sortedBy]);
+        });
+    else
+        sortable.sort(function (a, b) {
+            var x = a[1][sortedBy].toLowerCase(),
+                y = b[1][sortedBy].toLowerCase();
+            return x < y ? reversed * -1 : x > y ? reversed : 0;
+        });
+    return sortable; // array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
+}
 
 module.exports = function(logger, portalConfig, poolConfigs){
 
@@ -39,22 +83,41 @@ module.exports = function(logger, portalConfig, poolConfigs){
 
         for (var i = 0; i < redisClients.length; i++){
             var client = redisClients[i];
-            if (client.client.port === redisConfig.port && client.client.host === redisConfig.host){
+            if ((client.client.port === redisConfig.port && client.client.host === redisConfig.host) || (client.client.path !== null && client.client.path === redisConfig.socket)){
                 client.coins.push(coin);
                 return;
             }
         }
         redisClients.push({
             coins: [coin],
-            client: redis.createClient(redisConfig.port, redisConfig.host)
+            client: rediscreateClient(redisConfig)
         });
     });
 
 
     function setupStatsRedis(){
-        redisStats = redis.createClient(portalConfig.redis.port, portalConfig.redis.host);
+        redisStats = CreateRedisClient(portalConfig.redis);
         redisStats.on('error', function(err){
             logger.error(logSystem, 'Historics', 'Redis for stats had an error ' + JSON.stringify(err));
+            redisStats.auth(portalConfig.redis.password);
+        });
+    }
+
+    this.getBlocks = function (cback) {
+        var allBlocks = {};
+        async.each(_this.stats.pools, function(pool, pcb) {
+
+            if (_this.stats.pools[pool.name].pending && _this.stats.pools[pool.name].pending.blocks)
+                for (var i=0; i<_this.stats.pools[pool.name].pending.blocks.length; i++)
+                    allBlocks[pool.name+"-"+_this.stats.pools[pool.name].pending.blocks[i].split(':')[2]] = _this.stats.pools[pool.name].pending.blocks[i];
+
+            if (_this.stats.pools[pool.name].confirmed && _this.stats.pools[pool.name].confirmed.blocks)
+                for (var i=0; i<_this.stats.pools[pool.name].confirmed.blocks.length; i++)
+                    allBlocks[pool.name+"-"+_this.stats.pools[pool.name].confirmed.blocks[i].split(':')[2]] = _this.stats.pools[pool.name].confirmed.blocks[i];
+
+            pcb();
+        }, function(err) {
+            cback(allBlocks);
         });
     }
 
@@ -79,6 +142,34 @@ module.exports = function(logger, portalConfig, poolConfigs){
         });
     }
 
+    function getWorkerStats(address) {
+        address = address.split(".")[0];
+        if (address.length === 34) {
+            for (var h in statHistory) {
+                for(var pool in statHistory[h].pools) {
+
+                    statHistory[h].pools[pool].workers.sort(sortWorkersByHashrate);
+
+                    for(var w in statHistory[h].pools[pool].workers){
+                        if (w.startsWith(address)) {
+                            if (history[w] == null) {
+                                history[w] = [];
+                            }
+                            if (workers[w] == null && stats.pools[pool].workers[w] != null) {
+                                workers[w] = stats.pools[pool].workers[w];
+                            }
+                            if (statHistory[h].pools[pool].workers[w].hashrate) {
+                                history[w].push({time: statHistory[h].time, hashrate:statHistory[h].pools[pool].workers[w].hashrate});
+                            }
+                        }
+                    }
+                }
+            }
+            return JSON.stringify({"workers": workers, "history": history});
+        }
+        return null;
+    }
+
     function addStatPoolHistory(stats){
         var data = {
             time: stats.time,
@@ -94,8 +185,188 @@ module.exports = function(logger, portalConfig, poolConfigs){
         _this.statPoolHistory.push(data);
     }
 
+    var magnitude = 100000000;
+    var coinPrecision = magnitude.toString().length - 1;
 
+    function roundTo(n, digits) {
+        if (digits === undefined) {
+            digits = 0;
+        }
+        var multiplicator = Math.pow(10, digits);
+        n = parseFloat((n * multiplicator).toFixed(11));
+        var test =(Math.round(n) / multiplicator);
+        return +(test.toFixed(digits));
+    }
 
+    var satoshisToCoins = function(satoshis){
+        return roundTo((satoshis / magnitude), coinPrecision);
+    };
+
+    var coinsToSatoshies = function(coins){
+        return Math.round(coins * magnitude);
+    };
+
+    function coinsRound(number) {
+        return roundTo(number, coinPrecision);
+    }
+
+    function readableSeconds(t) {
+        var seconds = Math.round(t);
+        var minutes = Math.floor(seconds/60);
+        var hours = Math.floor(minutes/60);
+        var days = Math.floor(hours/24);
+        hours = hours-(days*24);
+        minutes = minutes-(days*24*60)-(hours*60);
+        seconds = seconds-(days*24*60*60)-(hours*60*60)-(minutes*60);
+        if (days > 0) { return (days + "d " + hours + "h " + minutes + "m " + seconds + "s"); }
+        if (hours > 0) { return (hours + "h " + minutes + "m " + seconds + "s"); }
+        if (minutes > 0) {return (minutes + "m " + seconds + "s"); }
+        return (seconds + "s");
+    }
+
+    this.getCoins = function(cback){
+        _this.stats.coins = redisClients[0].coins;
+        cback();
+    };
+
+    this.getPayout = function(address, cback){
+        async.waterfall([
+            function(callback){
+                _this.getBalanceByAddress(address, function(){
+                    callback(null, 'test');
+                });
+            }
+        ], function(err, total){
+            cback(coinsRound(total).toFixed(8));
+        });
+    };
+
+    this.getTotalSharesByAddress = function(address, cback) {
+        var a = address.split(".")[0];
+        var client = redisClients[0].client,
+            coins = redisClients[0].coins,
+            shares = [];
+
+        var pindex = parseInt(0);
+        var totalShares = parseFloat(0);
+        async.each(_this.stats.pools, function(pool, pcb) {
+            pindex++;
+            var coin = String(_this.stats.pools[pool.name].name);
+            client.hscan(coin + ':shares:roundCurrent', 0, "match", a+"*", "count", 1000, function(error, result) {
+                if (error) {
+                    pcb(error);
+                    return;
+                }
+                var workerName="";
+                var shares = 0;
+                for (var i in result[1]) {
+                    if (Math.abs(i % 2) != 1) {
+                        workerName = String(result[1][i]);
+                    } else {
+                        shares += parseFloat(result[1][i]);
+                    }
+                }
+                if (shares>0) {
+                    totalShares = shares;
+                }
+                pcb();
+            });
+        }, function(err) {
+            if (err) {
+                cback(0);
+                return;
+            }
+            if (totalShares > 0 || (pindex >= Object.keys(_this.stats.pools).length)) {
+                cback(totalShares);
+                return;
+            }
+        });
+    };
+
+    this.getBalanceByAddress = function(address, cback){
+
+        var a = address.split(".")[0];
+
+        var client = redisClients[0].client,
+            coins = redisClients[0].coins,
+            balances = [];
+
+        var totalHeld = parseFloat(0);
+        var totalPaid = parseFloat(0);
+        var totalImmature = parseFloat(0);
+
+        async.each(_this.stats.pools, function(pool, pcb) {
+            var coin = String(_this.stats.pools[pool.name].name);
+            // get all immature balances from address
+            client.hscan(coin + ':immature', 0, "match", a+"*", "count", 10000, function(error, pends) {
+                // get all balances from address
+                client.hscan(coin + ':balances', 0, "match", a+"*", "count", 10000, function(error, bals) {
+                    // get all payouts from address
+                    client.hscan(coin + ':payouts', 0, "match", a+"*", "count", 10000, function(error, pays) {
+
+                        var workerName = "";
+                        var balAmount = 0;
+                        var paidAmount = 0;
+                        var pendingAmount = 0;
+
+                        var workers = {};
+
+                        for (var i in pays[1]) {
+                            if (Math.abs(i % 2) != 1) {
+                                workerName = String(pays[1][i]);
+                                workers[workerName] = (workers[workerName] || {});
+                            } else {
+                                paidAmount = parseFloat(pays[1][i]);
+                                workers[workerName].paid = coinsRound(paidAmount);
+                                totalPaid += paidAmount;
+                            }
+                        }
+                        for (var b in bals[1]) {
+                            if (Math.abs(b % 2) != 1) {
+                                workerName = String(bals[1][b]);
+                                workers[workerName] = (workers[workerName] || {});
+                            } else {
+                                balAmount = parseFloat(bals[1][b]);
+                                workers[workerName].balance = coinsRound(balAmount);
+                                totalHeld += balAmount;
+                            }
+                        }
+                        for (var b in pends[1]) {
+                            if (Math.abs(b % 2) != 1) {
+                                workerName = String(pends[1][b]);
+                                workers[workerName] = (workers[workerName] || {});
+                            } else {
+                                pendingAmount = parseFloat(pends[1][b]);
+                                workers[workerName].immature = coinsRound(pendingAmount);
+                                totalImmature += pendingAmount;
+                            }
+                        }
+
+                        for (var w in workers) {
+                            balances.push({
+                                worker:String(w),
+                                balance:workers[w].balance,
+                                paid:workers[w].paid,
+                                immature:workers[w].immature
+                            });
+                        }
+
+                        pcb();
+                    });
+                });
+            });
+        }, function(err) {
+            if (err) {
+                callback("There was an error getting balances");
+                return;
+            }
+
+            _this.stats.balances = balances;
+            _this.stats.address = address;
+
+            cback({totalHeld:coinsRound(totalHeld), totalPaid:coinsRound(totalPaid), totalImmature:satoshisToCoins(totalImmature), balances});
+        });
+    };
 
     this.getGlobalStats = function(callback){
 
@@ -115,6 +386,19 @@ module.exports = function(logger, portalConfig, poolConfigs){
                 ['scard', ':blocksPending'],
                 ['scard', ':blocksConfirmed'],
                 ['scard', ':blocksKicked']
+            ];
+            var redisCommandTemplates = [
+                ['zremrangebyscore', ':hashrate', '-inf', '(' + windowTime],
+                ['zrangebyscore', ':hashrate', windowTime, '+inf'],
+                ['hgetall', ':stats'],
+                ['scard', ':blocksPending'],
+                ['scard', ':blocksConfirmed'],
+                ['scard', ':blocksKicked'],
+                ['smembers', ':blocksPending'],
+                ['smembers', ':blocksConfirmed'],
+                ['hgetall', ':shares:roundCurrent'],
+                ['hgetall', ':blocksPendingConfirms'],
+                ['zrange', ':payments', -100, -1]
             ];
 
             var commandsPerCoin = redisCommandTemplates.length;
@@ -140,21 +424,55 @@ module.exports = function(logger, portalConfig, poolConfigs){
                             name: coinName,
                             symbol: poolConfigs[coinName].coin.symbol.toUpperCase(),
                             algorithm: poolConfigs[coinName].coin.algorithm,
+                            poolFees: poolConfigs[coinName].rewardRecipients,
                             hashrates: replies[i + 1],
                             poolStats: {
                                 validShares: replies[i + 2] ? (replies[i + 2].validShares || 0) : 0,
                                 validBlocks: replies[i + 2] ? (replies[i + 2].validBlocks || 0) : 0,
                                 invalidShares: replies[i + 2] ? (replies[i + 2].invalidShares || 0) : 0,
-                                totalPaid: replies[i + 2] ? (replies[i + 2].totalPaid || 0) : 0
+                                totalPaid: replies[i + 2] ? (replies[i + 2].totalPaid || 0) : 0,
+                                networkBlocks: replies[i + 2] ? (replies[i + 2].networkBlocks || 0) : 0,
+                                networkSols: replies[i + 2] ? (replies[i + 2].networkSols || 0) : 0,
+                                networkSolsString: getReadableNetworkHashRateString(replies[i + 2] ? (replies[i + 2].networkSols || 0) : 0),
+                                networkDiff: replies[i + 2] ? (replies[i + 2].networkDiff || 0) : 0,
+                                networkConnections: replies[i + 2] ? (replies[i + 2].networkConnections || 0) : 0,
+                                networkVersion: replies[i + 2] ? (replies[i + 2].networkSubVersion || 0) : 0,
+                                networkProtocolVersion: replies[i + 2] ? (replies[i + 2].networkProtocolVersion || 0) : 0
                             },
+                            /* block stat counts */
                             blocks: {
                                 pending: replies[i + 3],
                                 confirmed: replies[i + 4],
                                 orphaned: replies[i + 5]
-                            }
+                            },
+                            /* show all pending blocks */
+                            pending: {
+                                blocks: replies[i + 6].sort(sortBlocks),
+                                confirms: (replies[i + 9] || {})
+                            },
+                            /* show last 50 found blocks */
+                            confirmed: {
+                                blocks: replies[i + 7].sort(sortBlocks).slice(0,50)
+                            },
+                            payments: [],
+                            currentRoundShares: (replies[i + 8] || {}),
+                            maxRoundTime: 0,
+                            shareCount: 0
                         };
+                        for(var j = replies[i + 10].length; j > 0; j--){
+                            var jsonObj;
+                            try {
+                                jsonObj = JSON.parse(replies[i + 10][j-1]);
+                            } catch(e) {
+                                jsonObj = null;
+                            }
+                            if (jsonObj !== null) {
+                                coinStats.payments.push(jsonObj);
+                            }
+                        }
                         allCoinStats[coinStats.name] = (coinStats);
                     }
+                    allCoinStats = sortPoolsByName(allCoinStats);
                     callback();
                 }
             });
@@ -185,36 +503,73 @@ module.exports = function(logger, portalConfig, poolConfigs){
                     var workerShares = parseFloat(parts[0]);
                     var miner = parts[1].split('.')[0];
                     var worker = parts[1];
+                    var diff = Math.round(parts[0] * 8192);
+                    var lastShare = parseInt(parts[2]);
                     if (workerShares > 0) {
                         coinStats.shares += workerShares;
                         if (worker in coinStats.workers) {
                             coinStats.workers[worker].shares += workerShares;
+                            coinStats.workers[worker].diff = diff;
+                            if (lastShare > coinStats.workers[worker].lastShare) {
+                                coinStats.workers[worker].lastShare = lastShare;
+                            }
                         } else {
                             coinStats.workers[worker] = {
+                                lastShare: 0,
+                                name: worker,
+                                diff: diff,
                                 shares: workerShares,
                                 invalidshares: 0,
-                                hashrateString: null
+                                currRoundShares: 0,
+                                currRoundTime: 0,
+                                hashrate: null,
+                                hashrateString: null,
+                                luckDays: null,
+                                luckHours: null,
+                                paid: 0,
+                                balance: 0
                             };
                         }
 
                         if (miner in coinStats.miners) {
                             coinStats.miners[miner].shares += workerShares;
+                            if (lastShare > coinStats.miners[miner].lastShare) {
+                                coinStats.miners[miner].lastShare = lastShare;
+                            }
                         } else {
                             coinStats.miners[miner] = {
+                                lastShare: 0,
+                                name: miner,
                                 shares: workerShares,
                                 invalidshares: 0,
-                                hashrateString: null
+                                currRoundShares: 0,
+                                currRoundTime: 0,
+                                hashrate: null,
+                                hashrateString: null,
+                                luckDays: null,
+                                luckHours: null
                             };
                         }
                     }
                     else {
                         if (worker in coinStats.workers) {
                             coinStats.workers[worker].invalidshares -= workerShares; // workerShares is negative number!
+                            coinStats.workers[worker].diff = diff;
                         } else {
                             coinStats.workers[worker] = {
+                                lastShare: 0,
+                                name: worker,
+                                diff: diff,
                                 shares: 0,
                                 invalidshares: -workerShares,
-                                hashrateString: null
+                                currRoundShares: 0,
+                                currRoundTime: 0,
+                                hashrate: null,
+                                hashrateString: null,
+                                luckDays: null,
+                                luckHours: null,
+                                paid: 0,
+                                balance: 0
                             };
                         }
 
@@ -222,16 +577,32 @@ module.exports = function(logger, portalConfig, poolConfigs){
                             coinStats.miners[miner].invalidshares -= workerShares; // workerShares is negative number!
                         } else {
                             coinStats.miners[miner] = {
+                                lastShare: 0,
+                                name: miner,
                                 shares: 0,
                                 invalidshares: -workerShares,
-                                hashrateString: null
+                                currRoundShares: 0,
+                                currRoundTime: 0,
+                                hashrate: null,
+                                hashrateString: null,
+                                luckDays: null,
+                                luckHours: null
                             };
                         }
                     }
                 });
 
+                coinStats.miners = sortMinersByHashrate(coinStats.miners);
+
                 var shareMultiplier = Math.pow(2, 32) / algos[coinStats.algorithm].multiplier;
                 coinStats.hashrate = shareMultiplier * coinStats.shares / portalConfig.website.stats.hashrateWindow;
+                coinStats.hashrateString = _this.getReadableHashRateString(coinStats.hashrate);
+
+                var _blocktime = 160;
+                var _networkHashRate = parseFloat(coinStats.poolStats.networkSols) * 1.2;
+                var _myHashRate = (coinStats.hashrate / 1000000) * 2;
+                coinStats.luckDays =  ((_networkHashRate / _myHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
+                coinStats.luckHours = ((_networkHashRate / _myHashRate * _blocktime) / (60 * 60)).toFixed(3);
 
                 coinStats.minerCount = Object.keys(coinStats.miners).length;
                 coinStats.workerCount = Object.keys(coinStats.workers).length;

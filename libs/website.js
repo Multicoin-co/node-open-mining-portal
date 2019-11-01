@@ -39,6 +39,8 @@ module.exports = function(logger) {
 		'api.html': 'api',
 		'admin.html': 'admin',
 		'mining-key.html': 'mining-key',
+		'miner-statistics.html': 'miner-statistics',
+		'payments.html': 'payments',
 		'chat.html': 'chat'
 	};
 
@@ -219,6 +221,51 @@ module.exports = function(logger) {
 		}
 	};
 
+	var minerpage = function(req, res, next) {
+		var address = req.params.address || null;
+		if (address != null) {
+			address = address.split(".")[0];
+			portalStats.getBalanceByAddress(address, function() {
+				processTemplates();
+				res.header('Content-Type', 'text/html');
+				res.end(indexesProcessed['miner-statistics']);
+			});
+		} else {
+			next();
+		}
+	};
+
+	var payout = function(req, res, next) {
+		var address = req.params.address || null;
+		if (address != null) {
+			portalStats.getPayout(address, function(data) {
+				res.write(data.toString());
+				res.end();
+			});
+		} else {
+			next();
+		}
+	};
+
+	var shares = function(req, res, next) {
+		portalStats.getCoins(function() {
+			processTemplates();
+			res.end(indexesProcessed['user_shares']);
+		});
+	};
+
+	var usershares = function(req, res, next) {
+		var coin = req.params.coin || null;
+		if (coin != null) {
+			portalStats.getCoinTotals(coin, null, function() {
+				processTemplates();
+				res.end(indexesProcessed['user_shares']);
+			});
+		} else {
+			next();
+		}
+	};
+
 	var route = function(req, res, next) {
 		var pageId = req.params.page || '';
 		if ( pageId in indexesProcessed ) {
@@ -299,6 +346,8 @@ module.exports = function(logger) {
 	app.get( '/key.html', function(req, res, next) {
 		res.end( keyScriptProcessed );
 	} );
+
+	app.get( '/workers/:address', minerpage );
 
 	app.get( '/:page', route );
 	app.get( '/', route );
