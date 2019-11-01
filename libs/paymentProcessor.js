@@ -186,30 +186,30 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                 var finalRedisCommands = [];
 
                 var blocks = rpcResults[poolOptions.coin.getInfo ? 'getinfo' : 'getmininginfo'].blocks
-                if (blocks !== null) {
+                if (blocks != null) {
                     finalRedisCommands.push(['hset', coin + ':stats', 'networkBlocks', blocks]);
                 }
 
                 var difficulty = poolOptions.coin.getInfo ? (typeof rpcResults.getinfo[multiAlgoDifficultyKey] !== 'undefined' ? rpcResults.getinfo[multiAlgoDifficultyKey] : rpcResults.getinfo.difficulty) : (typeof rpcResults.getmininginfo[multiAlgoDifficultyKey] !== 'undefined' ? rpcResults.getmininginfo[multiAlgoDifficultyKey] : rpcResults.getmininginfo.difficulty);
-                if (difficulty !== null) {
+                if (difficulty != null) {
                     finalRedisCommands.push(['hset', coin + ':stats', 'networkDiff', difficulty]);
                 }
 
                 var networkhashps = poolOptions.coin.getAllNetworkHashPS ? rpcResults.getallnetworkhashps[multiAlgoKey] : poolOptions.coin.getNetworkGHPS ? (rpcResults.getnetworkghps * Math.pow(1024, 3)) : rpcResults.getnetworkhashps;
-                if (networkhashps !== null) {
+                if (networkhashps != null) {
                     finalRedisCommands.push(['hset', coin + ':stats', 'networkSols', networkhashps]);
                 }
 
-                if (rpcResults.getnetworkinfo.connections !== null) {
+                if (rpcResults.getnetworkinfo.connections != null) {
                     finalRedisCommands.push(['hset', coin + ':stats', 'networkConnections', rpcResults.getnetworkinfo.connections]);
                 }
-                if (rpcResults.getnetworkinfo.version !== null) {
+                if (rpcResults.getnetworkinfo.version != null) {
                     finalRedisCommands.push(['hset', coin + ':stats', 'networkVersion', rpcResults.getnetworkinfo.version]);
                 }
-                if (rpcResults.getnetworkinfo.subversion !== null) {
+                if (rpcResults.getnetworkinfo.subversion != null) {
                     finalRedisCommands.push(['hset', coin + ':stats', 'networkSubVersion', rpcResults.getnetworkinfo.subversion]);
                 }
-                if (rpcResults.getnetworkinfo.protocolversion !== null) {
+                if (rpcResults.getnetworkinfo.protocolversion != null) {
                     finalRedisCommands.push(['hset', coin + ':stats', 'networkProtocolVersion', rpcResults.getnetworkinfo.protocolversion]);
                 }
 
