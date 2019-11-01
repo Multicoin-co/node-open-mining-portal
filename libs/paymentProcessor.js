@@ -149,7 +149,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
         batchRpcCalls.push(
             [poolOptions.coin.getInfo ? 'getinfo' : 'getmininginfo', []],
             [poolOptions.coin.getAllNetworkHashPS ? 'getallnetworkhashps' : poolOptions.coin.getNetworkGHPS ? 'getnetworkghps' : 'getnetworkhashps', []]
-        ]
+        );
 
         if (poolOptions.coin.getInfo) {
             batchRpcCalls.push(['getinfo', []], ['getallnetworkhashps', []]);
