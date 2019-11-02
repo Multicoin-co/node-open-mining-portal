@@ -1,13 +1,16 @@
 {
-    "name": "StrongHands",
-    "symbol": "SHND",
-    "algorithm": "sha256",
-    "mposDiffMultiplier": 256,
-    "coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
-    "peerMagic": "53484e44",
-    "peerMagicTestnet": "cff2c0fc",
-    "version_mask": "1fffe000",
-    "noNetworkInfo": true,
-    "getNetworkGHPS": true
+	"name": "StrongHands",
+	"symbol": "SHND",
+	"algorithm": "sha256",
+	"mposDiffMultiplier": 256,
+	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
+	"peerMagic": "53484e44",
+	"peerMagicTestnet": "cff2c0fc",
+	"version_mask": "1fffe000",
+	"noNetworkInfo": true,
+	"getNetworkGHPS": true,
+	"explorer": {
+		"txURL": "https://www.coinexplorer.net/SHND/transaction/"
+	}
 }
 
