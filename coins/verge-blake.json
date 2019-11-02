@@ -1,11 +1,11 @@
 {
     "name": "Verge - blake",
     "symbol": "XVG",
-    "algorithm": "blake",
+    "algorithm": "blake2s",
     "coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
     "peerMagic": "f7a77eff",
     "peerMagicTestnet": "cdf2c0ef",
-    "passAlgorithmKey": true,
+    "passAlgorithmKey": "blake",
     "getInfo": true,
     "getAllNetworkHashPS": true
 }

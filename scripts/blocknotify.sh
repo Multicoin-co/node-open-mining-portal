@@ -21,10 +21,19 @@ case $NOMP_COIN in
 		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'litecoin cash' $NOMP_HASH
 		;;
 	digibyte)
-		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'digibyte - groestl' $NOMP_HASH
+		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'digibyte - odo' $NOMP_HASH
 		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'digibyte - qubit' $NOMP_HASH
 		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'digibyte - scrypt' $NOMP_HASH
 		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'digibyte - sha256' $NOMP_HASH
 		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'digibyte - skein' $NOMP_HASH
 		;;
+	verge)
+		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'verge - groestl' $NOMP_HASH
+		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'verge - blake' $NOMP_HASH
+		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'verge - scrypt' $NOMP_HASH
+		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'verge - x17' $NOMP_HASH
+		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'verge - lyra2re2' $NOMP_HASH
+		;;
 esac
+
+exit 0

@@ -4,7 +4,7 @@
         <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
         <meta name="robots" content="none">
         <link rel="icon" type="image/png" href="/static/favicon.png">
-        <title>Graphs Content</title>
+        <title>Miner Statistics Content</title>
         <link href="https://fonts.gstatic.com" rel="preconnect">
         <link href="https://fonts.gstatic.com" rel="dns-prefetch">
         <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:400,500">
@@ -40,97 +40,46 @@
         <main>
             <div id="chartsPage">
                 <div id="topCharts">
-                    <div class="chartWrapper card">
-                        <div class="chartLabel">Workers Per Pool</div>
-                        <div class="chartHolder"><svg id="poolWorkers"/></div>
+                    <div class="chartWrapper card" style="margin: 18px">
+                        <div class="chartLabel">Miner Hashrate (<span id="statsWorker">...</span>)</div>
+                        <div class="chartHolder"><svg id="workerHashrate" /></div>
                     </div>
-
-                    <div class="chartWrapper card">
-                        <div class="chartLabel">Hashrate Per Pool</div>
-                        <div class="chartHolder"><svg id="poolHashrate"/></div>
-                    </div>
-
-                    <div class="chartWrapper card">
-                        <div class="chartLabel">Blocks Pending Per Pool</div>
-                        <div class="chartHolder"><svg id="poolBlocks"/></div>
+                    <div id="homePage">
+                        <div id="boxesLower">
+                            <div>
+                                <div class="boxStats card" id="boxStatsLeft">
+                                    <div class="boxLowerHeader">Performance Stats</div>
+                                    <div class="boxStatsList">
+                                        <div>
+                                            <div class="poolStats">
+                                                <div class="poolStat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="material"><path d="M22 9V7h-2V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H4V5h14v14zM6 13h5v4H6zm6-6h4v3h-4zM6 7h5v5H6zm6 4h4v6h-4z"/><path fill="none" d="M0 0h24v24H0zm0 0h24v24H0z"/></svg>&nbsp;&nbsp;<span id="statsHashrate">...</span>&nbsp;(Now)</div>
+                                                <div class="poolStat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="material"><path d="M22 9V7h-2V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H4V5h14v14zM6 13h5v4H6zm6-6h4v3h-4zM6 7h5v5H6zm6 4h4v6h-4z"/><path fill="none" d="M0 0h24v24H0zm0 0h24v24H0z"/></svg>&nbsp;&nbsp;<span id="statsHashrateAvg">...</span>&nbsp;(Average)</div>
+                                                <div class="poolStat"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24" class="material"><defs><path id="a" d="M0 0h24v24H0V0z"/></defs><clipPath id="b"><use xlink:href="#a" overflow="visible"/></clipPath><path d="M1 21h12v2H1zM5.245 8.07l2.83-2.827 14.14 14.142-2.828 2.828zM12.317 1l5.657 5.656-2.83 2.83-5.654-5.66zM3.825 9.485l5.657 5.657-2.828 2.828-5.657-5.657z" clip-path="url(#b)"/></svg>&nbsp;&nbsp;Luck&nbsp;<span id="statsLuckDays">...</span>&nbsp;Days</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                               </div>
+                            </div>
+                            <div>
+                                <div class="boxStats card" id="boxStatsRight">
+                                    <div class="boxLowerHeader">Compensation Stats</div>
+                                    <div class="boxStatsList">
+                                        <div>
+                                            <div class="poolStats">
+                                                <div class="poolStat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="material"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>&nbsp;&nbsp;Shares:&nbsp;<span id="statsTotalShares">...</span></div>
+                                                <div class="poolStat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="material"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M5 8h2v8H5zm7 0H9c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h3c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1zm-1 6h-1v-4h1v4zm7-6h-3c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h3c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1zm-1 6h-1v-4h1v4z"/><path fill="none" d="M4 6h16v12H4z"/><path d="M2 4v16h20V4H2zm2 14V6h16v12H4z"/></svg>&nbsp;&nbsp;Immature:&nbsp;<span id="statsTotalImmature">...</span></div>
+                                                <div class="poolStat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="material"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M5 8h2v8H5zm7 0H9c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h3c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1zm-1 6h-1v-4h1v4zm7-6h-3c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h3c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1zm-1 6h-1v-4h1v4z"/><path fill="none" d="M4 6h16v12H4z"/><path d="M2 4v16h20V4H2zm2 14V6h16v12H4z"/></svg>&nbsp;&nbsp;Balance:&nbsp;<span id="statsTotalBal">...</span></div>
+                                                <div class="poolStat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="material"><path d="M11.5,1L2,6V8H21V6M16,10V17H19V10M2,22H21V19H2M10,10V17H13V10M4,10V17H7V10H4Z" /></svg>&nbsp;&nbsp;Paid:&nbsp;<span id="statsTotalPaid">...</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="boxesWorkers" style="padding: 9px"></div>
                     </div>
                 </div>
             </div>
         </main>
     </body>
-</html><style>
-    #boxesWorkers {
-        margin: 0 9px;
-    }
-    #boxesWorkers > div {
-        display: flex;
-    }
-    #boxesWorkers > div > div {
-        flex: 1 1 auto;
-        margin: 0 9px 18px 9px;
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-    }
-    .boxLowerHeader{
-        font-size: 1.3em;
-        margin: 0 0 5px 10px;
-    }
-    #boxStatsLeft{
-        color: black;
-        background-color: #cccccc;
-    }
-    #boxStatsRight{
-        color: black;
-        background-color: #cccccc;
-    }
-    .boxStats{
-        color: white;
-    }
-    .boxStatsList{
-        display: flex;
-        flex-flow: row wrap;
-        justify-content: space-around;
-        opacity: 0.77;
-        margin-bottom: 5px;
-        flex: 1 1 auto;
-        align-content: center;
-    }
-    .boxStatsList i.fa{
-        height: 15px;
-        width: 33px;
-        text-align: center;
-    }
-    .boxStatsList > div{
-        padding: 5px 20px;
-    }
-    .boxStatsList > div > div{
-        padding: 3px;
-    }
-</style>
-
-<div id="minerStatsPage">
-    <div id="topCharts">
-        <div class="chartWrapper">
-            <div class="chartLabel">
-                <div style="float:left; padding-right: 18px;"><i class="fa fa-users"></i><span id="statsWorkers">...</span></div>
-                <div style="float:right; padding-left: 18px;"><small><i class="fa fa-tachometer"></i> <span id="statsHashrateAvg">...</span> (Avg)</small></div>
-                <div style="float:right; padding-left: 18px;"><small><i class="fa fa-tachometer"></i> <span id="statsHashrate">...</span> (Now)</small></div>
-                <div style="float:right; padding-left: 18px;"><small><i class="fa fa-gavel"></i> Luck <span id="statsLuckDays">...</span> Days</small></div>
-            </div>
-            <div class="chartHolder"><svg id="workerHashrate" /></div>
-            <div>
-                <div style="float:right; padding-top: 9px; padding-right: 18px;"><i class="fa fa-cog"></i> Shares: <span id="statsTotalShares">...</span></div>
-                <div style="float:left; padding-top: 9px; padding-left: 18px; padding-right: 18px;"><i class="fa fa-money"></i> Immature: <span id="statsTotalImmature">...</span> </div>
-                <div style="float:left; padding-top: 9px; padding-left: 18px; padding-right: 18px;"><i class="fa fa-money"></i> Bal: <span id="statsTotalBal">...</span>  </div>
-                <div style="padding-top: 9px; padding-left: 18px;"><i class="fa fa-money"></i> Paid: <span id="statsTotalPaid">...</span>  </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="boxesWorkers"> </div>
-</div>
-
-<script>
-
-</script>
+</html>
