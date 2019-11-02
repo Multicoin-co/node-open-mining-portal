@@ -521,8 +521,11 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                     var shareAmounts = {};
                     var minerTotals = {};
                     var totalSent = 0;
+                    var totalShares = 0;
+
                     for (var w in workers) {
                         var worker = workers[w];
+                        totalShares += (worker.totalShares || 0);
                         worker.balance = worker.balance || 0;
                         worker.reward = worker.reward || 0;
                         var toSend = (worker.balance + worker.reward) * (1 - withholdPercent);
