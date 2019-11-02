@@ -18,7 +18,7 @@
                         {{ for (var j = 0, workerNames = Object.keys(it.stats.pools[pool].workers).sort(); j < workerNames.length; j++) { var worker = workerNames[j]; }}
                             {{var workerstat = it.stats.pools[pool].workers[worker];}}
                         <tr class="odd">
-                            <td>{{=worker}}</td>
+                            <td><a href="{{=String(worker).split('.')[0]}}">{{=worker}}</a></td>
                             <td>{{=Math.floor(workerstat.shares)}}</td>
                             <td>{{=Math.floor(workerstat.invalidshares)}}</td>
                             <td>{{? workerstat.shares > 0}} {{=Math.floor(10000 * workerstat.shares / (workerstat.shares + workerstat.invalidshares)) / 100}}% {{??}} 0% {{?}}</td>
