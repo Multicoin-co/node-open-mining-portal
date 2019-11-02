@@ -474,12 +474,13 @@ function SetupForPool(logger, poolOptions, setupFinished) {
 
                                 var totalShares = Object.keys(workerShares).reduce(function (p, c) {
                                     return p + parseFloat(workerShares[c])
-                                }, 0);
+                                }, parseFloat(0));
 
                                 for (var workerAddress in workerShares) {
-                                    var percent = parseFloat(workerShares[workerAddress]) / totalShares;
-                                    var workerImmatureTotal = Math.floor(reward * percent);
                                     var worker = workers[workerAddress] = (workers[workerAddress] || {});
+                                    var shares = parseFloat(workerShares[workerAddress] || 0);
+                                    var percent = shares / totalShares;
+                                    var workerImmatureTotal = Math.floor(reward * percent);
                                     worker.immature = (worker.immature || 0) + workerImmatureTotal;
                                 }
                                 break;
@@ -493,9 +494,11 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                                 }, 0);
 
                                 for (var workerAddress in workerShares) {
-                                    var percent = parseFloat(workerShares[workerAddress]) / totalShares;
-                                    var workerRewardTotal = Math.floor(reward * percent);
                                     var worker = workers[workerAddress] = (workers[workerAddress] || {});
+                                    var shares = parseFloat(workerShares[workerAddress] || 0);
+                                    worker.totalShares = parseFloat(worker.totalShares || 0) + shares;
+                                    var percent = shares / totalShares;
+                                    var workerRewardTotal = Math.floor(reward * percent);
                                     worker.reward = (worker.reward || 0) + workerRewardTotal;
                                 }
                                 break;
