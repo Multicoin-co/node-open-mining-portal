@@ -4,5 +4,8 @@
 	"algorithm": "x16r",
 	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
 	"peerMagic": "5241564e",
-	"peerMagicTestnet": "52564e54"
+	"peerMagicTestnet": "52564e54",
+	"explorer": {
+		"txURL": "https://ravencoin.network/tx/"
+	}
 }

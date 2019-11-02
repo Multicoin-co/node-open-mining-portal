@@ -1,11 +1,14 @@
 {
-    "name": "Verge - groestl",
-    "symbol": "XVG",
-    "algorithm": "groestlmyriad",
-    "coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
-    "peerMagic": "f7a77eff",
-    "peerMagicTestnet": "cdf2c0ef",
-    "passAlgorithmKey": "groestl",
-    "getInfo": true,
-    "getAllNetworkHashPS": true
+	"name": "Verge - groestl",
+	"symbol": "XVG",
+	"algorithm": "groestlmyriad",
+	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
+	"peerMagic": "f7a77eff",
+	"peerMagicTestnet": "cdf2c0ef",
+	"passAlgorithmKey": "groestl",
+	"getInfo": true,
+	"getAllNetworkHashPS": true,
+	"explorer": {
+		"txURL": "https://verge-blockchain.info/tx/"
+	}
 }

@@ -5,5 +5,8 @@
 	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
 	"peerMagic": "c7e4baf8",
 	"peerMagicTestnet": "b6f5d3cf",
-        "version_mask": "1fffe000"
+        "version_mask": "1fffe000",
+	"explorer": {
+		"txURL": "https://explorer.litecoinca.sh/tx/"
+	}
 }

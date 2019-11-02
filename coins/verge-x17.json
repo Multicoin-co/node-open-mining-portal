@@ -1,11 +1,14 @@
 {
-    "name": "Verge - x17",
-    "symbol": "XVG",
-    "algorithm": "x17",
-    "coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
-    "peerMagic": "f7a77eff",
-    "peerMagicTestnet": "cdf2c0ef",
-    "passAlgorithmKey": true,
-    "getInfo": true,
-    "getAllNetworkHashPS": true
+	"name": "Verge - x17",
+	"symbol": "XVG",
+	"algorithm": "x17",
+	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
+	"peerMagic": "f7a77eff",
+	"peerMagicTestnet": "cdf2c0ef",
+	"passAlgorithmKey": true,
+	"getInfo": true,
+	"getAllNetworkHashPS": true,
+	"explorer": {
+		"txURL": "https://verge-blockchain.info/tx/"
+	}
 }
