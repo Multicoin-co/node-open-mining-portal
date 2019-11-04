@@ -531,6 +531,8 @@ module.exports = function(logger, portalConfig, poolConfigs){
                                 currRoundShares: 0,
                                 hashrate: null,
                                 hashrateString: null,
+                                solohashrate: null,
+                                solohashrateString: null,
                                 luckDays: null,
                                 luckHours: null,
                                 paid: 0,
@@ -554,6 +556,8 @@ module.exports = function(logger, portalConfig, poolConfigs){
                                 currRoundShares: 0,
                                 hashrate: null,
                                 hashrateString: null,
+                                solohashrate: null,
+                                solohashrateString: null,
                                 luckDays: null,
                                 luckHours: null
                             };
@@ -577,6 +581,8 @@ module.exports = function(logger, portalConfig, poolConfigs){
                                 currRoundShares: 0,
                                 hashrate: null,
                                 hashrateString: null,
+                                solohashrate: null,
+                                solohashrateString: null,
                                 luckDays: null,
                                 luckHours: null,
                                 paid: 0,
@@ -597,6 +603,8 @@ module.exports = function(logger, portalConfig, poolConfigs){
                                 currRoundShares: 0,
                                 hashrate: null,
                                 hashrateString: null,
+                                solohashrate: null,
+                                solohashrateString: null,
                                 luckDays: null,
                                 luckHours: null
                             };
