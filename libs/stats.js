@@ -585,7 +585,7 @@ module.exports = function(logger, portalConfig, poolConfigs){
                         }
 
                         if (miner in coinStats.miners) {
-                            coinStats.miners[miner][mode !== 'SOLO' ? 'invalidshares' : 'invalidsoloshares'] -= mode workerShares; // workerShares is negative number!
+                            coinStats.miners[miner][mode !== 'SOLO' ? 'invalidshares' : 'invalidsoloshares'] -= workerShares; // workerShares is negative number!
                         } else {
                             coinStats.miners[miner] = {
                                 lastShare: 0,
