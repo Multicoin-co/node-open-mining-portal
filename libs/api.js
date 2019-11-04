@@ -56,6 +56,7 @@ module.exports = function(logger, portalConfig, poolConfigs){
                                 // get current round share total
                                 portalStats.getTotalSharesByAddress(address, function(shares) {
                                     var totalHash = parseFloat(0.0);
+                                    var totalSoloHash = parseFloat(0.0);
                                     var totalShares = shares;
                                     var networkSols = 0;
                                     for (var h in portalStats.statHistory) {
@@ -65,13 +66,27 @@ module.exports = function(logger, portalConfig, poolConfigs){
                                                     if (history[w] == null) {
                                                         history[w] = [];
                                                     }
+
+                                                    var entry = {
+                                                        time: portalStats.statHistory[h].time
+                                                    };
+                                                    
                                                     if (portalStats.statHistory[h].pools[pool].workers[w].hashrate) {
-                                                        history[w].push({time: portalStats.statHistory[h].time, hashrate:portalStats.statHistory[h].pools[pool].workers[w].hashrate});
+                                                        entry.hashrate = portalStats.statHistory[h].pools[pool].workers[w].hashrate;
+                                                    }
+
+                                                    if (portalStats.statHistory[h].pools[pool].workers[w].solohashrate) {
+                                                        entry.solohashrate = portalStats.statHistory[h].pools[pool].workers[w].solohashrate;
+                                                    }
+
+                                                    if (Object.keys(entry).length > 1) {
+                                                        history[w].push(entry);
                                                     }
                                                 }
                                             }
                                         }
                                     }
+
                                     for(var pool in portalStats.stats.pools) {
                                         for(var w in portalStats.stats.pools[pool].workers){
                                             if (w.startsWith(address)) {
@@ -85,11 +100,12 @@ module.exports = function(logger, portalConfig, poolConfigs){
                                                 workers[w].balance = (workers[w].balance || 0);
                                                 workers[w].paid = (workers[w].paid || 0);
                                                 totalHash += portalStats.stats.pools[pool].workers[w].hashrate;
+                                                totalSoloHash += portalStats.stats.pools[pool].workers[w].solohashrate;
                                                 networkSols = portalStats.stats.pools[pool].poolStats.networkSols;
                                             }
                                         }
                                     }
-                                    res.end(JSON.stringify({miner: address, totalHash: totalHash, totalShares: totalShares, networkSols: networkSols, immature: balances.totalImmature, balance: balances.totalHeld, paid: balances.totalPaid, workers: workers, history: history}));
+                                    res.end(JSON.stringify({miner: address, totalHash: totalHash, totalSoloHash: totalSoloHash, totalShares: totalShares, networkSols: networkSols, immature: balances.totalImmature, balance: balances.totalHeld, paid: balances.totalPaid, workers: workers, history: history}));
                                 });
                             });
                         } else {

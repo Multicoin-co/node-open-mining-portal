@@ -604,17 +604,20 @@ module.exports = function(logger, portalConfig, poolConfigs){
                     }
                 });
 
-                coinStats.miners = sortMinersByHashrate(coinStats.miners);
-
                 var shareMultiplier = Math.pow(2, 32) / algos[coinStats.algorithm].multiplier;
                 coinStats.hashrate = shareMultiplier * coinStats.shares / portalConfig.website.stats.hashrateWindow;
                 coinStats.hashrateString = _this.getReadableHashRateString(coinStats.hashrate);
+                coinStats.solohashrate = shareMultiplier * coinStats.soloshares / portalConfig.website.stats.hashrateWindow;
+                coinStats.solohashrateString = _this.getReadableHashRateString(coinStats.solohashrate);
 
                 var _blocktime = 160;
                 var _networkHashRate = parseFloat(coinStats.poolStats.networkSols);
                 var _myHashRate = coinStats.hashrate;
                 coinStats.luckDays =  ((_networkHashRate / _myHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
                 coinStats.luckHours = ((_networkHashRate / _myHashRate * _blocktime) / (60 * 60)).toFixed(3);
+                var _mySoloHashRate = coinStats.solohashrate;
+                coinStats.soloLuckDays =  ((_networkHashRate / _mySoloHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
+                coinStats.soloLuckHours = ((_networkHashRate / _mySoloHashRate * _blocktime) / (60 * 60)).toFixed(3);
 
                 coinStats.minerCount = Object.keys(coinStats.miners).length;
                 coinStats.workerCount = Object.keys(coinStats.workers).length;
@@ -626,10 +629,13 @@ module.exports = function(logger, portalConfig, poolConfigs){
                     portalStats.algos[algo] = {
                         workers: 0,
                         hashrate: 0,
-                        hashrateString: null
+                        hashrateString: null,
+                        solohashrate: 0,
+                        solohashrateString: null
                     };
                 }
                 portalStats.algos[algo].hashrate += coinStats.hashrate;
+                portalStats.algos[algo].solohashrate += coinStats.solohashrate;
                 portalStats.algos[algo].workers += Object.keys(coinStats.workers).length;
 
                 var _shareTotal = parseFloat(0);
@@ -648,32 +654,48 @@ module.exports = function(logger, portalConfig, poolConfigs){
 
                 for (var worker in coinStats.workers) {
                     var _workerRate = shareMultiplier * coinStats.workers[worker].shares / portalConfig.website.stats.hashrateWindow;
+                    var _workerSoloRate = shareMultiplier * coinStats.workers[worker].soloshares / portalConfig.website.stats.hashrateWindow;
                     var _wHashRate = _workerRate;
+                    var _wSoloHashRate = _workerSoloRate;
                     coinStats.workers[worker].luckDays = ((_networkHashRate / _wHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
                     coinStats.workers[worker].luckHours = ((_networkHashRate / _wHashRate * _blocktime) / (60 * 60)).toFixed(3);
                     coinStats.workers[worker].hashrate = _workerRate;
                     coinStats.workers[worker].hashrateString = _this.getReadableHashRateString(_workerRate);
+                    coinStats.workers[worker].soloLuckDays = ((_networkHashRate / _wSoloHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
+                    coinStats.workers[worker].soloLuckHours = ((_networkHashRate / _wSoloHashRate * _blocktime) / (60 * 60)).toFixed(3);
+                    coinStats.workers[worker].solohashrate = _workerSoloRate;
+                    coinStats.workers[worker].solohashrateString = _this.getReadableHashRateString(_workerSoloRate);
                 }
                 for (var miner in coinStats.miners) {
                     var _workerRate = shareMultiplier * coinStats.miners[miner].shares / portalConfig.website.stats.hashrateWindow;
+                    var _workerSoloRate = shareMultiplier * coinStats.miners[miner].shares / portalConfig.website.stats.hashrateWindow;
                     var _wHashRate = _workerRate;
+                    var _wSoloHashRate = _workerSoloRate;
                     coinStats.miners[miner].luckDays = ((_networkHashRate / _wHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
                     coinStats.miners[miner].luckHours = ((_networkHashRate / _wHashRate * _blocktime) / (60 * 60)).toFixed(3);
                     coinStats.miners[miner].hashrate = _workerRate;
                     coinStats.miners[miner].hashrateString = _this.getReadableHashRateString(_workerRate);
+                    coinStats.miners[miner].soloLuckDays = ((_networkHashRate / _wSoloHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
+                    coinStats.miners[miner].soloLuckHours = ((_networkHashRate / _wSoloHashRate * _blocktime) / (60 * 60)).toFixed(3);
+                    coinStats.miners[miner].solohashrate = _workerSoloRate;
+                    coinStats.miners[miner].solohashrateString = _this.getReadableHashRateString(_workerSoloRate);
                 }
 
                 coinStats.workers = sortWorkersByName(coinStats.workers);
+
+                coinStats.miners = sortMinersByHashrate(coinStats.miners);
 
                 delete coinStats.hashrates;
                 delete coinStats.shares;
 
                 coinStats.hashrateString = _this.getReadableHashRateString(coinStats.hashrate);
+                coinStats.solohashrateString = _this.getReadableHashRateString(coinStats.solohashrate);
             });
 
             Object.keys(portalStats.algos).forEach(function(algo){
                 var algoStats = portalStats.algos[algo];
                 algoStats.hashrateString = _this.getReadableHashRateString(algoStats.hashrate);
+                algoStats.solohashrateString = _this.getReadableHashRateString(algoStats.solohashrate);
             });
 
             _this.stats = portalStats;
