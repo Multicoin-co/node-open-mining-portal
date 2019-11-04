@@ -7,7 +7,7 @@
                     <thead>
                         <tr>
                             <th>Pool</th>
-                            <th>Algo</th>
+                            <th>Algorithm</th>
                             <th>Workers</th>
                             <th>Valid Shares</th>
                             <th>Invalid Shares</th>
@@ -15,7 +15,8 @@
                             <th>Pending</th>
                             <th>Confirmed</th>
                             <th>Orphaned</th>
-                            <th>Hashrate</th>
+                            <th>PPS Hashrate</th>
+                            <th>Solo Hashrate</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -31,6 +32,7 @@
                             <td>{{=it.stats.pools[pool].blocks.confirmed}}</td>
                             <td>{{=it.stats.pools[pool].blocks.orphaned}}</td>
                             <td>{{=it.stats.pools[pool].hashrateString}}</td>
+                            <td>{{=it.stats.pools[pool].solohashrateString}}</td>
                         </tr>
                         {{ } }}
                     </tbody>
