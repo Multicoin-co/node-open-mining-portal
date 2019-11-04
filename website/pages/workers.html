@@ -8,6 +8,7 @@
                     <thead>
                         <tr>
                             <th>Address</th>
+                            <th>Mode</th>
                             <th>Shares</th>
                             <th>Invalid shares</th>
                             <th>Efficiency</th>
@@ -16,12 +17,13 @@
                     </thead>
                     <tbody>
                         {{ for (var j = 0, workerNames = Object.keys(it.stats.pools[pool].workers).sort(); j < workerNames.length; j++) { var worker = workerNames[j]; }}
-                            {{var workerstat = it.stats.pools[pool].workers[worker];}}
+                            {{var workerstat = it.stats.pools[pool].workers[worker]; var sharesKey = workerstat.mode === 'SOLO' ? 'soloshares' : 'shares';}}
                         <tr class="odd">
                             <td><a href="/workers/{{=String(worker).split('.')[0]}}">{{=worker}}</a></td>
-                            <td>{{=Math.floor(workerstat.shares)}}</td>
-                            <td>{{=Math.floor(workerstat.invalidshares)}}</td>
-                            <td>{{? workerstat.shares > 0}} {{=Math.floor(10000 * workerstat.shares / (workerstat.shares + workerstat.invalidshares)) / 100}}% {{??}} 0% {{?}}</td>
+                            <td>{{=workerstat.mode}}</td>
+                            <td>{{=Math.floor(workerstat[sharesKey])}}</td>
+                            <td>{{=Math.floor(workerstat['invalid' + sharesKey])}}</td>
+                            <td>{{? workerstat[sharesKey] > 0}} {{=Math.floor(10000 * workerstat[sharesKey] / (workerstat[sharesKey] + workerstat['invalid' + sharesKey])) / 100}}% {{??}} 0% {{?}}</td>
                             <td>{{=workerstat.hashrateString}}</td>
                         </tr>
                         {{ } }}

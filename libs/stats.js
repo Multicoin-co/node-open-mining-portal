@@ -434,7 +434,7 @@ module.exports = function(logger, portalConfig, poolConfigs){
                                 totalPaid: replies[i + 2] ? (replies[i + 2].totalPaid || 0) : 0,
                                 networkBlocks: replies[i + 2] ? (replies[i + 2].networkBlocks || 0) : 0,
                                 networkSols: replies[i + 2] ? (replies[i + 2].networkSols || 0) : 0,
-                                networkSolsString: getReadableNetworkHashRateString(replies[i + 2] ? (replies[i + 2].networkSols || 0) : 0),
+                                networkSolsString: _this.getReadableHashRateString(replies[i + 2] ? (replies[i + 2].networkSols || 0) : 0),
                                 networkDiff: replies[i + 2] ? (replies[i + 2].networkDiff || 0) : 0,
                                 networkConnections: replies[i + 2] ? (replies[i + 2].networkConnections || 0) : 0,
                                 networkVersion: replies[i + 2] ? (replies[i + 2].networkSubVersion || 0) : 0,
@@ -499,6 +499,7 @@ module.exports = function(logger, portalConfig, poolConfigs){
                 coinStats.workers = {};
                 coinStats.miners = {};
                 coinStats.shares = 0;
+                coinStats.soloshares = 0;
                 coinStats.hashrates.forEach(function(ins){
                     var parts = ins.split(':');
                     var workerShares = parseFloat(parts[0]);
@@ -506,21 +507,27 @@ module.exports = function(logger, portalConfig, poolConfigs){
                     var worker = parts[1];
                     var diff = Math.round(parts[0] * 8192);
                     var lastShare = parseInt(parts[2]);
+                    var mode = parts[3] || 'PPS';
                     if (workerShares > 0) {
-                        coinStats.shares += workerShares;
+                        coinStats[mode !== 'SOLO' ? 'shares' : 'soloshares'] += workerShares;
+
                         if (worker in coinStats.workers) {
-                            coinStats.workers[worker].shares += workerShares;
+                            coinStats.workers[worker].mode = mode;
+                            coinStats.workers[worker][mode !== 'SOLO' ? 'shares' : 'soloshares'] += workerShares;
                             coinStats.workers[worker].diff = diff;
                             if (lastShare > coinStats.workers[worker].lastShare) {
                                 coinStats.workers[worker].lastShare = lastShare;
                             }
                         } else {
                             coinStats.workers[worker] = {
-                                lastShare: 0,
+                                lastShare: lastShare,
                                 name: worker,
                                 diff: diff,
-                                shares: workerShares,
+                                mode: mode,
+                                shares: mode !== 'SOLO' ? workerShares : 0,
+                                soloshares: mode === 'SOLO' ? workerShares : 0,
                                 invalidshares: 0,
+                                invalidsoloshares: 0,
                                 currRoundShares: 0,
                                 hashrate: null,
                                 hashrateString: null,
@@ -532,7 +539,7 @@ module.exports = function(logger, portalConfig, poolConfigs){
                         }
 
                         if (miner in coinStats.miners) {
-                            coinStats.miners[miner].shares += workerShares;
+                            coinStats.miners[miner][mode !== 'SOLO' ? 'shares' : 'soloshares'] += workerShares;
                             if (lastShare > coinStats.miners[miner].lastShare) {
                                 coinStats.miners[miner].lastShare = lastShare;
                             }
@@ -540,8 +547,10 @@ module.exports = function(logger, portalConfig, poolConfigs){
                             coinStats.miners[miner] = {
                                 lastShare: 0,
                                 name: miner,
-                                shares: workerShares,
+                                shares: mode !== 'SOLO' ? workerShares : 0,
+                                soloshares: mode === 'SOLO' ? workerShares : 0,
                                 invalidshares: 0,
+                                invalidsoloshares: 0,
                                 currRoundShares: 0,
                                 hashrate: null,
                                 hashrateString: null,
@@ -552,15 +561,19 @@ module.exports = function(logger, portalConfig, poolConfigs){
                     }
                     else {
                         if (worker in coinStats.workers) {
-                            coinStats.workers[worker].invalidshares -= workerShares; // workerShares is negative number!
+                            coinStats.workers[worker].mode = mode;
+                            coinStats.workers[worker][mode !== 'SOLO' ? 'invalidshares' : 'invalidsoloshares'] -= workerShares; // workerShares is negative number!
                             coinStats.workers[worker].diff = diff;
                         } else {
                             coinStats.workers[worker] = {
                                 lastShare: 0,
                                 name: worker,
                                 diff: diff,
+                                mode: mode,
                                 shares: 0,
-                                invalidshares: -workerShares,
+                                soloshares: 0,
+                                invalidshares: mode !== 'SOLO' ? -workerShares : 0,
+                                invalidsoloshares: mode === 'SOLO' ? -workerShares : 0,
                                 currRoundShares: 0,
                                 hashrate: null,
                                 hashrateString: null,
@@ -572,13 +585,15 @@ module.exports = function(logger, portalConfig, poolConfigs){
                         }
 
                         if (miner in coinStats.miners) {
-                            coinStats.miners[miner].invalidshares -= workerShares; // workerShares is negative number!
+                            coinStats.miners[miner][mode !== 'SOLO' ? 'invalidshares' : 'invalidsoloshares'] -= mode workerShares; // workerShares is negative number!
                         } else {
                             coinStats.miners[miner] = {
                                 lastShare: 0,
                                 name: miner,
                                 shares: 0,
-                                invalidshares: -workerShares,
+                                soloshares: 0,
+                                invalidshares: mode !== 'SOLO' ? -workerShares : 0,
+                                invalidsoloshares: mode === 'SOLO' ? -workerShares : 0,
                                 currRoundShares: 0,
                                 hashrate: null,
                                 hashrateString: null,
@@ -596,8 +611,8 @@ module.exports = function(logger, portalConfig, poolConfigs){
                 coinStats.hashrateString = _this.getReadableHashRateString(coinStats.hashrate);
 
                 var _blocktime = 160;
-                var _networkHashRate = parseFloat(coinStats.poolStats.networkSols) * 1.2;
-                var _myHashRate = (coinStats.hashrate / 1000000) * 2;
+                var _networkHashRate = parseFloat(coinStats.poolStats.networkSols);
+                var _myHashRate = coinStats.hashrate;
                 coinStats.luckDays =  ((_networkHashRate / _myHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
                 coinStats.luckHours = ((_networkHashRate / _myHashRate * _blocktime) / (60 * 60)).toFixed(3);
 
@@ -633,7 +648,7 @@ module.exports = function(logger, portalConfig, poolConfigs){
 
                 for (var worker in coinStats.workers) {
                     var _workerRate = shareMultiplier * coinStats.workers[worker].shares / portalConfig.website.stats.hashrateWindow;
-                    var _wHashRate = (_workerRate / 1000000) * 2;
+                    var _wHashRate = _workerRate;
                     coinStats.workers[worker].luckDays = ((_networkHashRate / _wHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
                     coinStats.workers[worker].luckHours = ((_networkHashRate / _wHashRate * _blocktime) / (60 * 60)).toFixed(3);
                     coinStats.workers[worker].hashrate = _workerRate;
@@ -641,7 +656,7 @@ module.exports = function(logger, portalConfig, poolConfigs){
                 }
                 for (var miner in coinStats.miners) {
                     var _workerRate = shareMultiplier * coinStats.miners[miner].shares / portalConfig.website.stats.hashrateWindow;
-                    var _wHashRate = (_workerRate / 1000000) * 2;
+                    var _wHashRate = _workerRate;
                     coinStats.miners[miner].luckDays = ((_networkHashRate / _wHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
                     coinStats.miners[miner].luckHours = ((_networkHashRate / _wHashRate * _blocktime) / (60 * 60)).toFixed(3);
                     coinStats.miners[miner].hashrate = _workerRate;
@@ -753,21 +768,11 @@ module.exports = function(logger, portalConfig, poolConfigs){
 
     this.getReadableHashRateString = function(hashrate){
         var i = -1;
-        var byteUnits = [ ' KH', ' MH', ' GH', ' TH', ' PH' ];
+        var byteUnits = [ ' KH', ' MH', ' GH', ' TH', ' PH', ' EH', ' ZH', ' YH' ];
         do {
-            hashrate = hashrate / 1000;
+            hashrate = hashrate / 1024;
             i++;
-        } while (hashrate > 1000);
+        } while (hashrate > 1024);
         return hashrate.toFixed(2) + byteUnits[i];
     };
-
-    function getReadableNetworkHashRateString(hashrate) {
-        hashrate = (hashrate * 1000000);
-        if (hashrate < 1000000)
-            return '0 Sol';
-        var byteUnits = [ ' Sol/s', ' KSol/s', ' MSol/s', ' GSol/s', ' TSol/s', ' PSol/s' ];
-        var i = Math.floor((Math.log(hashrate/1000) / Math.log(1000)) - 1);
-        hashrate = (hashrate/1000) / Math.pow(1000, i + 1);
-        return hashrate.toFixed(2) + byteUnits[i];
-    }
 };

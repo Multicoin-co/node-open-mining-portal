@@ -308,6 +308,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                             height: details[2],
                             minedby: details[3],
                             time: details[4],
+                            soloMined: details[5] === 'SOLO',
                             serialized: r
                         };
                     });
@@ -408,8 +409,6 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                         return true;
                     };
 
-
-                    //Filter out all rounds that are immature (not confirmed or orphaned yet)
                     rounds = rounds.filter(function (r) {
                         switch (r.category) {
                             case 'orphan':
@@ -423,9 +422,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                         }
                     });
 
-
                     callback(null, workers, rounds, addressAccount);
-
                 });
             },
 
@@ -433,8 +430,40 @@ function SetupForPool(logger, poolOptions, setupFinished) {
             /* Does a batch redis call to get shares contributed to each round. Then calculates the reward
                amount owned to each miner for each round. */
             function (workers, rounds, addressAccount, callback) {
+                var soloRounds = rounds.filter(function(r) {
+                    return r.soloMined;
+                });
 
-                var shareLookups = rounds.map(function (r) {
+                soloRounds.forEach(function(round, i) {
+                    var workerAddress = round.minedby;
+
+                    switch (round.category) {
+                        case 'kicked':
+                        case 'orphan':
+                            round.workerShares = 0;
+                            break;
+                        case 'immature':
+                            /* We found an immature block. */
+                            var worker = workers[workerAddress] = (workers[workerAddress] || {});
+                            var workerImmatureTotal = parseInt(round.reward * magnitude);
+                            worker.immature = (worker.immature || 0) + workerImmatureTotal;
+                            break;
+                        case 'generate':
+                            /* We found a confirmed block! Now get the reward for it and calculate how much
+                               we owe the miner. */
+                            var worker = workers[workerAddress] = (workers[workerAddress] || {});
+                            worker.totalShares = parseFloat(worker.totalShares || 0);
+                            var workerRewardTotal = parseInt(round.reward * magnitude);
+                            worker.reward = (worker.reward || 0) + workerRewardTotal;
+                            break;
+                    }
+                });
+
+                var shareRounds = rounds.filter(function(r) {
+                    return !r.soloMined;
+                });
+
+                var shareLookups = shareRounds.map(function (r) {
                     return ['hgetall', coin + ':shares:round' + r.height]
                 });
 
@@ -448,7 +477,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                     }
 
 
-                    rounds.forEach(function (round, i) {
+                    shareRounds.forEach(function (round, i) {
                         var workerShares = allWorkerShares[i];
 
                         if (!workerShares) {
@@ -654,8 +683,6 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                     }
                 }
 
-
-
                 var movePendingCommands = [];
                 var roundsToDelete = [];
                 var orphanMergeCommands = [];
@@ -679,7 +706,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                         case 'orphan':
                             movePendingCommands.push(['smove', coin + ':blocksPending', coin + ':blocksOrphaned', r.serialized]);
                             confirmsToDelete.push(['hdel', coin + ':blocksPendingConfirms', r.blockHash]);
-                            if (r.canDeleteShares) {
+                            if (!r.soloMined && r.canDeleteShares) {
                                 moveSharesToCurrent(r);
                                 roundsToDelete.push(coin + ':shares:round' + r.height);
                             }
@@ -690,10 +717,11 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                         case 'generate':
                             confirmsToDelete.push(['hdel', coin + ':blocksPendingConfirms', r.blockHash]);
                             movePendingCommands.push(['smove', coin + ':blocksPending', coin + ':blocksConfirmed', r.serialized]);
-                            roundsToDelete.push(coin + ':shares:round' + r.height);
+                            if (!r.soloMined) {
+                                roundsToDelete.push(coin + ':shares:round' + r.height);
+                            }
                             return;
                     }
-
                 });
 
                 var finalRedisCommands = [];

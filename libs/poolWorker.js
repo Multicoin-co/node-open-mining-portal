@@ -166,7 +166,7 @@ module.exports = function(logger){
         };
 
 
-        var pool = Stratum.createPool(poolOptions, authorizeFN, logger);
+        var pool = Stratum.createPool(poolOptions, authorizeFN);
         pool.on('share', function(isValidShare, isValidBlock, data){
             
             var shareData = JSON.stringify(data);
@@ -179,9 +179,9 @@ module.exports = function(logger){
 
             if (isValidShare) {
                 if(data.shareDiff > 1000000000) {
-                    logger.debug(logSystem, logComponent, logSubCat, 'Share was found with diff higher than 1.000.000.000!');
+                    logger.debug(logSystem, logComponent, logSubCat, 'Share was found with diff higher than 1,000,000,000!');
                 } else if(data.shareDiff > 1000000) {
-                    logger.debug(logSystem, logComponent, logSubCat, 'Share was found with diff higher than 1.000.000!');
+                    logger.debug(logSystem, logComponent, logSubCat, 'Share was found with diff higher than 1,000,000!');
                 }
                 logger.debug(logSystem, logComponent, logSubCat, 'Share accepted at diff ' + data.difficulty + '/' + data.shareDiff + ' by ' + data.worker + ' [' + data.ip + ']' );
             } else if (!isValidShare) {
