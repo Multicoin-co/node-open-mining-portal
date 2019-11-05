@@ -1,0 +1,12 @@
+{
+	"name": "Bitcoin Rebooted",
+	"symbol": "BOOT",
+	"algorithm": "sha256",
+	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
+	"peerMagic": "c2d4d2a1",
+	"peerMagicTestnet": "425452a1",
+	"version_mask": "1fffe000",
+	"explorer": {
+		"txURL": "http://explorer.bitcoin-rebooted.xyz:3001/tx/"
+	}
+}

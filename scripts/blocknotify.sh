@@ -17,6 +17,9 @@ case $NOMP_COIN in
 	bitcoincash)
 		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'bitcoin cash' $NOMP_HASH
 		;;
+	bitcoinrebooted)
+		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'bitcoin rebooted' $NOMP_HASH
+		;;
 	bitcoinsv)
 		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'bitcoin sv' $NOMP_HASH
 		;;
