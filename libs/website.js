@@ -290,6 +290,12 @@ module.exports = function(logger) {
 				case 'bch':
 					protocol = 'bitcoincash';
 					break;
+				case 'bsv':
+					protocol = 'bitcoinsv';
+					break;
+				case 'btcv':
+					protocol = 'bitcoinv';
+					break;
 				case 'ltc':
 					protocol = 'litecoin';
 					break;

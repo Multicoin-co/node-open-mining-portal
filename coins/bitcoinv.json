@@ -1,0 +1,11 @@
+{
+	"name": "Bitcoin V",
+	"symbol": "BTCV",
+	"algorithm": "sha256",
+	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
+	"peerMagic": "f5b4f3a2",
+	"peerMagicTestnet": "f5b4f3a2",
+	"explorer": {
+		"txURL": "http://explorer.bitcoinv.org/tx/"
+	}
+}
