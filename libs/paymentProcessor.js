@@ -486,12 +486,6 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                             return;
                         }
 
-                        for (var key in workerShares) {
-                            if (workerShares.hasOwnProperty(key) && key.length !== 34) {
-                                delete workerShares[key];
-                            }
-                        }
-
                         switch (round.category) {
                             case 'kicked':
                             case 'orphan':
