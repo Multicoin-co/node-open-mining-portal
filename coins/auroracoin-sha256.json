@@ -1,0 +1,12 @@
+{
+	"name": "Auroracoin - sha256",
+	"symbol": "AUR",
+	"algorithm": "sha256",
+	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
+	"peerMagic": "fda4dc6c",
+	"passAlgorithm": true,
+	"version_mask": "1fffe000",
+	"explorer": {
+		"txURL": "http://insight.auroracoin.is/tx/"
+	}
+}

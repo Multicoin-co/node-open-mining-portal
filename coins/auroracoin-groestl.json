@@ -1,0 +1,11 @@
+{
+	"name": "Auroracoin - groestl",
+	"symbol": "AUR",
+	"algorithm": "groestl",
+	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
+	"peerMagic": "fda4dc6c",
+	"passAlgorithm": true,
+	"explorer": {
+		"txURL": "http://insight.auroracoin.is/tx/"
+	}
+}

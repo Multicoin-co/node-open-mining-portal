@@ -284,11 +284,17 @@ module.exports = function(logger) {
 		if ( req.params.coin && req.params.address ) {
 			var protocol = null;
 			switch( req.params.coin ) {
+				case 'aur':
+					protocol = 'auroracoin';
+					break;
 				case 'btc':
 					protocol = 'bitcoin';
 					break;
 				case 'bch':
 					protocol = 'bitcoincash';
+					break;
+				case 'boot':
+					protocol = 'bitcoin'; // That coin sucks lol, it didn't even change the protocol!
 					break;
 				case 'bsv':
 					protocol = 'bitcoinsv';
