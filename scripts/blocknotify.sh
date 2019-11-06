@@ -43,6 +43,13 @@ case $NOMP_COIN in
 		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'verge - x17' $NOMP_HASH
 		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'verge - lyra2re2' $NOMP_HASH
 		;;
+	auroracoin)
+		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'auroracoin - groestl' $NOMP_HASH
+		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'auroracoin - qubit' $NOMP_HASH
+		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'auroracoin - scrypt' $NOMP_HASH
+		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'auroracoin - sha256' $NOMP_HASH
+		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST 'auroracoin - skein' $NOMP_HASH
+		;;
 esac
 
 exit 0
