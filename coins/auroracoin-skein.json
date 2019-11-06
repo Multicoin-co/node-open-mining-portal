@@ -5,6 +5,7 @@
 	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
 	"peerMagic": "fda4dc6c",
 	"passAlgorithm": true,
+	"getAllNetworkHashPS": true,
 	"explorer": {
 		"txURL": "http://insight.auroracoin.is/tx/"
 	}
