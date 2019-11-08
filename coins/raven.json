@@ -1,7 +1,7 @@
 {
 	"name": "Raven",
 	"symbol": "RVN",
-	"algorithm": "x16r",
+	"algorithm": "x16rv2",
 	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
 	"peerMagic": "5241564e",
 	"peerMagicTestnet": "52564e54",
