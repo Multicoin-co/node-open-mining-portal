@@ -377,16 +377,6 @@ module.exports = function(logger, portalConfig, poolConfigs){
         async.each(redisClients, function(client, callback){
             var windowTime = (((Date.now() / 1000) - portalConfig.website.stats.hashrateWindow) | 0).toString();
             var redisCommands = [];
-
-
-            var redisCommandTemplates = [
-                ['zremrangebyscore', ':hashrate', '-inf', '(' + windowTime],
-                ['zrangebyscore', ':hashrate', windowTime, '+inf'],
-                ['hgetall', ':stats'],
-                ['scard', ':blocksPending'],
-                ['scard', ':blocksConfirmed'],
-                ['scard', ':blocksKicked']
-            ];
             var redisCommandTemplates = [
                 ['zremrangebyscore', ':hashrate', '-inf', '(' + windowTime],
                 ['zrangebyscore', ':hashrate', windowTime, '+inf'],
@@ -434,7 +424,7 @@ module.exports = function(logger, portalConfig, poolConfigs){
                                 totalPaid: replies[i + 2] ? (replies[i + 2].totalPaid || 0) : 0,
                                 networkBlocks: replies[i + 2] ? (replies[i + 2].networkBlocks || 0) : 0,
                                 networkSols: replies[i + 2] ? (replies[i + 2].networkSols || 0) : 0,
-                                networkSolsString: _this.getReadableHashRateString(replies[i + 2] ? (replies[i + 2].networkSols || 0) : 0),
+                                networkSolsString: !poolConfigs[coinName].coin.isZCashProtocol ? _this.getReadableHashRateString(replies[i + 2] ? (replies[i + 2].networkSols || 0) : 0) : getZCashReadableNetworkHashRateString(replies[i + 2] ? (replies[i + 2].networkSols || 0) : 0),
                                 networkDiff: replies[i + 2] ? (replies[i + 2].networkDiff || 0) : 0,
                                 networkConnections: replies[i + 2] ? (replies[i + 2].networkConnections || 0) : 0,
                                 networkVersion: replies[i + 2] ? (replies[i + 2].networkSubVersion || 0) : 0,
@@ -614,16 +604,16 @@ module.exports = function(logger, portalConfig, poolConfigs){
 
                 var shareMultiplier = Math.pow(2, 32) / algos[coinStats.algorithm].multiplier;
                 coinStats.hashrate = shareMultiplier * coinStats.shares / portalConfig.website.stats.hashrateWindow;
-                coinStats.hashrateString = _this.getReadableHashRateString(coinStats.hashrate);
+                coinStats.hashrateString = !poolConfigs[coin].coin.isZCashProtocol ? _this.getReadableHashRateString(coinStats.hashrate) : _this.getZCashReadableHashRateString(coinStats.hashrate);
                 coinStats.solohashrate = shareMultiplier * coinStats.soloshares / portalConfig.website.stats.hashrateWindow;
-                coinStats.solohashrateString = _this.getReadableHashRateString(coinStats.solohashrate);
+                coinStats.solohashrateString = !poolConfigs[coin].coin.isZCashProtocol ? _this.getReadableHashRateString(coinStats.solohashrate) : _this.getZCashReadableHashRateString(coinStats.solohashrate);
 
                 var _blocktime = 160;
-                var _networkHashRate = parseFloat(coinStats.poolStats.networkSols);
-                var _myHashRate = coinStats.hashrate;
+                var _networkHashRate = parseFloat(coinStats.poolStats.networkSols) * (!poolConfigs[coin].coin.isZCashProtocol ? 1.0 : 1.2);
+                var _myHashRate = !poolConfigs[coin].coin.isZCashProtocol ? coinStats.hashrate : (coinStats.hashrate / 1000000) * 2;
                 coinStats.luckDays =  ((_networkHashRate / _myHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
                 coinStats.luckHours = ((_networkHashRate / _myHashRate * _blocktime) / (60 * 60)).toFixed(3);
-                var _mySoloHashRate = coinStats.solohashrate;
+                var _mySoloHashRate = !poolConfigs[coin].coin.isZCashProtocol ? coinStats.solohashrate : (coinStats.solohashrate / 1000000) * 2;
                 coinStats.soloLuckDays =  ((_networkHashRate / _mySoloHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
                 coinStats.soloLuckHours = ((_networkHashRate / _mySoloHashRate * _blocktime) / (60 * 60)).toFixed(3);
 
@@ -663,30 +653,30 @@ module.exports = function(logger, portalConfig, poolConfigs){
                 for (var worker in coinStats.workers) {
                     var _workerRate = shareMultiplier * coinStats.workers[worker].shares / portalConfig.website.stats.hashrateWindow;
                     var _workerSoloRate = shareMultiplier * coinStats.workers[worker].soloshares / portalConfig.website.stats.hashrateWindow;
-                    var _wHashRate = _workerRate;
-                    var _wSoloHashRate = _workerSoloRate;
+                    var _wHashRate = !poolConfigs[coin].coin.isZCashProtocol ? _workerRate : (_workerRate / 1000000) * 2;
+                    var _wSoloHashRate = !poolConfigs[coin].coin.isZCashProtocol ? _workerSoloRate : (_workerSoloRate / 1000000) * 2;
                     coinStats.workers[worker].luckDays = ((_networkHashRate / _wHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
                     coinStats.workers[worker].luckHours = ((_networkHashRate / _wHashRate * _blocktime) / (60 * 60)).toFixed(3);
                     coinStats.workers[worker].hashrate = _workerRate;
-                    coinStats.workers[worker].hashrateString = _this.getReadableHashRateString(_workerRate);
+                    coinStats.workers[worker].hashrateString = !poolConfigs[coin].coin.isZCashProtocol ? _this.getReadableHashRateString(_workerRate) : _this.getZCashReadableHashRateString(_workerRate);
                     coinStats.workers[worker].soloLuckDays = ((_networkHashRate / _wSoloHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
                     coinStats.workers[worker].soloLuckHours = ((_networkHashRate / _wSoloHashRate * _blocktime) / (60 * 60)).toFixed(3);
                     coinStats.workers[worker].solohashrate = _workerSoloRate;
-                    coinStats.workers[worker].solohashrateString = _this.getReadableHashRateString(_workerSoloRate);
+                    coinStats.workers[worker].solohashrateString = !poolConfigs[coin].coin.isZCashProtocol ? _this.getReadableHashRateString(_workerSoloRate) : _this.getZCashReadableHashRateString(_workerSoloRate);
                 }
                 for (var miner in coinStats.miners) {
                     var _workerRate = shareMultiplier * coinStats.miners[miner].shares / portalConfig.website.stats.hashrateWindow;
                     var _workerSoloRate = shareMultiplier * coinStats.miners[miner].shares / portalConfig.website.stats.hashrateWindow;
-                    var _wHashRate = _workerRate;
-                    var _wSoloHashRate = _workerSoloRate;
+                    var _wHashRate = !poolConfigs[coin].coin.isZCashProtocol ? _workerRate : (_workerRate / 1000000) * 2;
+                    var _wSoloHashRate = !poolConfigs[coin].coin.isZCashProtocol ? _workerSoloRate : (_workerSoloRate / 1000000) * 2;
                     coinStats.miners[miner].luckDays = ((_networkHashRate / _wHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
                     coinStats.miners[miner].luckHours = ((_networkHashRate / _wHashRate * _blocktime) / (60 * 60)).toFixed(3);
                     coinStats.miners[miner].hashrate = _workerRate;
-                    coinStats.miners[miner].hashrateString = _this.getReadableHashRateString(_workerRate);
+                    coinStats.miners[miner].hashrateString = !poolConfigs[coin].coin.isZCashProtocol ? _this.getReadableHashRateString(_workerRate) : _this.getZCashReadableHashRateString(_workerRate);
                     coinStats.miners[miner].soloLuckDays = ((_networkHashRate / _wSoloHashRate * _blocktime) / (24 * 60 * 60)).toFixed(3);
                     coinStats.miners[miner].soloLuckHours = ((_networkHashRate / _wSoloHashRate * _blocktime) / (60 * 60)).toFixed(3);
                     coinStats.miners[miner].solohashrate = _workerSoloRate;
-                    coinStats.miners[miner].solohashrateString = _this.getReadableHashRateString(_workerSoloRate);
+                    coinStats.miners[miner].solohashrateString = !poolConfigs[coin].coin.isZCashProtocol ? _this.getReadableHashRateString(_workerSoloRate) : _this.getZCashReadableHashRateString(_workerSoloRate);
                 }
 
                 coinStats.workers = sortWorkersByName(coinStats.workers);
@@ -696,14 +686,19 @@ module.exports = function(logger, portalConfig, poolConfigs){
                 delete coinStats.hashrates;
                 delete coinStats.shares;
 
-                coinStats.hashrateString = _this.getReadableHashRateString(coinStats.hashrate);
-                coinStats.solohashrateString = _this.getReadableHashRateString(coinStats.solohashrate);
+                coinStats.hashrateString = !poolConfigs[coin].coin.isZCashProtocol ? _this.getReadableHashRateString(coinStats.hashrate) : _this.getZCashReadableHashRateString(coinStats.hashrate);
+                coinStats.solohashrateString = !poolConfigs[coin].coin.isZCashProtocol ? _this.getReadableHashRateString(coinStats.solohashrate) : _this.getZCashReadableHashRateString(coinStats.solohashrate);
             });
 
             Object.keys(portalStats.algos).forEach(function(algo){
                 var algoStats = portalStats.algos[algo];
-                algoStats.hashrateString = _this.getReadableHashRateString(algoStats.hashrate);
-                algoStats.solohashrateString = _this.getReadableHashRateString(algoStats.solohashrate);
+                if (algo === 'verushash' || algo === 'equihash') {
+                    algoStats.hashrateString = _this.getZCashReadableHashRateString(algoStats.hashrate);
+                    algoStats.solohashrateString = _this.getZCashReadableHashRateString(algoStats.solohashrate);
+                } else {
+                    algoStats.hashrateString = _this.getReadableHashRateString(algoStats.hashrate);
+                    algoStats.solohashrateString = _this.getReadableHashRateString(algoStats.solohashrate);
+                }
             });
 
             _this.stats = portalStats;
@@ -805,4 +800,26 @@ module.exports = function(logger, portalConfig, poolConfigs){
         } while (hashrate > 1024);
         return hashrate.toFixed(2) + byteUnits[i];
     };
+
+
+    this.getZCashReadableHashRateString = function(hashrate){
+        hashrate = (hashrate * 2);
+        if (hashrate < 1000000) {
+            return (Math.round(hashrate / 1000) / 1000 ).toFixed(2)+' Sol/s';
+        }
+        var byteUnits = [ ' Sol/s', ' KSol/s', ' MSol/s', ' GSol/s', ' TSol/s', ' PSol/s', ' ESol/s', ' ZSol/s', ' YSol/s' ];
+        var i = Math.floor((Math.log(hashrate/1000) / Math.log(1000)) - 1);
+        hashrate = (hashrate/1000) / Math.pow(1000, i + 1);
+        return hashrate.toFixed(2) + byteUnits[i];
+    };
+
+    function getZCashReadableNetworkHashRateString(hashrate) {
+        hashrate = (hashrate * 1000000);
+        if (hashrate < 1000000)
+            return '0 Sol';
+        var byteUnits = [ ' Sol/s', ' KSol/s', ' MSol/s', ' GSol/s', ' TSol/s', ' PSol/s', ' ESol/s', ' ZSol/s', ' YSol/s' ];
+        var i = Math.floor((Math.log(hashrate/1000) / Math.log(1000)) - 1);
+        hashrate = (hashrate/1000) / Math.pow(1000, i + 1);
+        return hashrate.toFixed(2) + byteUnits[i];
+    }
 };

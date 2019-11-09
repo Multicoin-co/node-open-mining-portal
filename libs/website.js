@@ -335,6 +335,12 @@ module.exports = function(logger) {
 				case 'shnd':
 					protocol = 'stronghands';
 					break;
+				case 'zen':
+					protocol = 'horizen';
+					break;
+				case 'zero':
+					protocol = 'zero';
+					break;
 				default:
 					break;
 			}
