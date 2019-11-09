@@ -3,6 +3,7 @@
 	"symbol": "ZER",
 	"algorithm": "equihash",
 	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
+	"isZCashProtocol": true,
 	"parameters": {
 		"N": 192,
 		"K": 7,
