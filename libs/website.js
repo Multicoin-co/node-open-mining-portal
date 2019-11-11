@@ -302,14 +302,8 @@ module.exports = function(logger) {
 				case 'btcv':
 					protocol = 'bitcoinv';
 					break;
-				case 'ltc':
-					protocol = 'litecoin';
-					break;
-				case 'lcc':
-					protocol = 'litecoincash';
-					break;
-				case 'xmr':
-					protocol = 'monero';
+				case 'dash':
+					protocol = 'dash';
 					break;
 				case 'dgb':
 					protocol = 'digibyte';
@@ -317,28 +311,37 @@ module.exports = function(logger) {
 				case 'doge':
 					protocol = 'dogecoin';
 					break;
-				case 'rvn':
-					protocol = 'raven';
+				case 'ltc':
+					protocol = 'litecoin';
 					break;
-				case 'vtc':
-					protocol = 'vertcoin';
-					break;
-				case 'dash':
-					protocol = 'dash';
-					break;
-				case 'xvg':
-					protocol = 'verge';
+				case 'lcc':
+					protocol = 'litecoincash';
 					break;
 				case 'lcnt':
 					protocol = 'lucent';
 					break;
+				case 'rvn':
+					protocol = 'raven';
+					break;
 				case 'shnd':
 					protocol = 'stronghands';
+					break;
+				case 'vtc':
+					protocol = 'vertcoin';
+					break;
+				case 'vrsc':
+					protocol = 'veruscoin';
+					break;
+				case 'xmr':
+					protocol = 'monero';
+					break;
+				case 'xvg':
+					protocol = 'verge';
 					break;
 				case 'zen':
 					protocol = 'horizen';
 					break;
-				case 'zero':
+				case 'zer':
 					protocol = 'zero';
 					break;
 				default:
