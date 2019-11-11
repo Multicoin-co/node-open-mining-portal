@@ -1159,7 +1159,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                         else {
                             var txid = result.response;
 
-                            logger.special(logSystem, logComponent, 'Sent ' + satoshisTocoins(totalSent) + ' to ' + Object.keys(addressAmounts).length + ' miners; txid: ' + txid);
+                            logger.special(logSystem, logComponent, 'Sent ' + satoshisToCoins(totalSent) + ' to ' + Object.keys(addressAmounts).length + ' miners; txid: ' + txid);
 
                             if (withholdPercent > 0) {
                                 logger.warning(logSystem, logComponent, 'Had to withhold ' + (withholdPercent * 100)
