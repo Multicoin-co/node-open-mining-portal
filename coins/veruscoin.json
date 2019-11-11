@@ -1,6 +1,6 @@
 {
-	"name": "verus",
-	"symbol": "vrsc",
+	"name": "VerusCoin",
+	"symbol": "VRSC",
 	"algorithm": "verushash",
 	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
 	"isZCashProtocol": true,
