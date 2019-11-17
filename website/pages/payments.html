@@ -20,9 +20,9 @@
                         <tr class="odd">
                             <td>
                                 {{ if (it.poolsConfigs[pool].coin.explorer && it.poolsConfigs[pool].coin.explorer.txURL) { }}
-                                <a href="{{=it.poolsConfigs[pool].coin.explorer.txURL + it.stats.pools[pool].payments[p].txid}}" title="View Transaction" target="_blank">{{=it.stats.pools[pool].payments[p].blocks.split(',').join(', ')}}</a>
+                                <a href="{{=it.poolsConfigs[pool].coin.explorer.txURL + it.stats.pools[pool].payments[p].txid}}" title="View Transaction" target="_blank">{{=it.stats.pools[pool].payments[p].blocks.join(', ')}}</a>
                                 {{ } else { }}
-                                    {{=it.stats.pools[pool].payments[p].blocks.split(',').join(', ')}}
+                                    {{=it.stats.pools[pool].payments[p].blocks.join(', ')}}
                                 {{ } }}
                             </td>
                             <td>{{=readableDate(it.stats.pools[pool].payments[p].time)}}</td>
