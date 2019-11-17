@@ -1114,7 +1114,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                     daemon.cmd('sendmany', [poolOptions.coin.isZCashProtocol ? '' : addressAccount || '', addressAmounts], function (result) {
                         //Check if payments failed because wallet doesn't have enough coins to pay for tx fees
                         if (result.error && result.error.code === -6) {
-                            if (result.error.message && result.error.message.includes("insufficient funds")) {
+                            if (result.error.message && result.error.message.toLowerCase().includes("insufficient funds")) {
                                 // only try up to XX times (Max, 0.5%)
                                 if (tries < 5) {
                                     var higherPercent = withholdPercent + 0.001;
