@@ -27,7 +27,7 @@
 		"t3dqSV4YGj5V3WjQhqFGrKTMUf9Tgc6xnJM",
 		"t3aJkYT1i6tyytq8J6khPaDNtgZsBSXgfBf"
 	],
-	"txfee": 0.0001,
+	"txfee": 0.0003,
 	"peerMagic": "5a45524f",
 	"explorer": {
 		"txURL": "https://insight.zerocurrency.io/insight/tx/",
