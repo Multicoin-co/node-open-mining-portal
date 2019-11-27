@@ -80,7 +80,7 @@ giving hackers little reward and keeping your pool from being a target.
 
 ### Community / Support
 Discord
-* Support / general discussion join #cryptopools-github: https://discordapp.com/invite/psnfVE
+* Support / general discussion join [#cryptopools-github](https://discordapp.com/invite/XpQmBjz)
 
 *Having problems getting the portal running due to some module dependency error?* It's probably because you
 didn't follow the instructions in this README. Please __read the usage instructions__ including [requirements](#requirements) and [downloading/installing](#1-downloading--installing). If you've followed the instructions completely and are still having problems then open an issue here on github or join our #cryptopools-github Discord channel and explain your problem :).
