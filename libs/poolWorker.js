@@ -1,4 +1,4 @@
-var Stratum = require('stratum-pool');
+var Stratum = require('cryptocurrency-stratum-pool');
 var redis   = require('redis');
 var net     = require('net');
 

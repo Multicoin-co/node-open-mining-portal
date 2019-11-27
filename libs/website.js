@@ -11,8 +11,8 @@ var bodyParser = require('body-parser');
 var compress = require('compression');
 var ampCors = require('amp-toolbox-cors');
 
-var Stratum = require('stratum-pool');
-var util = require('stratum-pool/lib/util.js');
+var Stratum = require('cryptocurrency-stratum-pool');
+var util = require('cryptocurrency-stratum-pool/lib/util.js');
 
 var api = require('./api.js');
 

@@ -1,4 +1,4 @@
-FROM node:9.4.0
+FROM node:12.10.3
 
 RUN echo "deb http://ftp.us.debian.org/debian unstable main contrib non-free" > /etc/apt/sources.list.d/unstable.list &&\
     apt-get update &&\
@@ -6,20 +6,20 @@ RUN echo "deb http://ftp.us.debian.org/debian unstable main contrib non-free" > 
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5 &&\
     cc --version
 
-RUN mkdir -p /opt/node-open-mining-portal
+RUN mkdir -p /opt/cryptocurrency-pool-server
 
-COPY package.json /opt/node-open-mining-portal/
-COPY package-lock.json /opt/node-open-mining-portal/
+COPY package.json /opt/cryptocurrency-pool-server/
+COPY package-lock.json /opt/cryptocurrency-pool-server/
 
-WORKDIR /opt/node-open-mining-portal
+WORKDIR /opt/cryptocurrency-pool-server
 
 RUN npm install && echo 4
 
-COPY . /opt/node-open-mining-portal/
+COPY . /opt/cryptocurrency-pool-server/
 
-RUN rm -rf /opt/node-open-mining-portal/pool_configs
-RUN ln -s /opt/config/config.json /opt/node-open-mining-portal/config.json
-RUN ln -s /opt/config/pool_configs /opt/node-open-mining-portal/
+RUN rm -rf /opt/cryptocurrency-pool-server/pool_configs
+RUN ln -s /opt/config/config.json /opt/cryptocurrency-pool-server/config.json
+RUN ln -s /opt/config/pool_configs /opt/cryptocurrency-pool-server/
 
 VOLUME ["/opt/config"]
 

@@ -3,8 +3,8 @@ var fs = require('fs');
 var redis = require('redis');
 var async = require('async');
 
-var Stratum = require('stratum-pool');
-var util = require('stratum-pool/lib/util.js');
+var Stratum = require('cryptocurrency-stratum-pool');
+var util = require('cryptocurrency-stratum-pool/lib/util.js');
 var CreateRedisClient = require('./createRedisClient.js');
 
 
