@@ -1,4 +1,4 @@
-# Cryptocurrency Pool Server ![Logo](https://cryptopools.aod-tech.com/static/logo.png "Logo")
+# Cryptocurrency Pool Server <img src="https://cryptopools.aod-tech.com/static/logo.png" width="64" alt="Cryptocurrency Pool Server Logo" valign="middle">
 
 [![NPM](https://nodei.co/npm/cryptocurrency-pool-server.png?downloads=true&stars=true)](https://nodei.co/npm/cryptocurrency-pool-server/)
 
