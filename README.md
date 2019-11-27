@@ -1,5 +1,7 @@
 # Cryptocurrency Pool Server ![Logo](https://cryptopools.aod-tech.com/static/logo.png "Logo")
 
+[![NPM](https://nodei.co/npm/cryptocurrency-pool-server.png?downloads=true&stars=true)](https://nodei.co/npm/cryptocurrency-pool-server/)
+
 This software is an extremely efficient, highly scalable, all-in-one, easy to setup cryptocurrency mining/staking pool written
 entirely in Node.js. It contains a stratum poolserver; reward/payment/share processor; and a responsive user-friendly front-end
 website featuring mining/staking instructions and in-depth live statistics.
