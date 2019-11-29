@@ -7,6 +7,7 @@
 	"peerMagicTestnet": "b6f5d3cf",
         "version_mask": "1fffe000",
 	"explorer": {
-		"txURL": "https://explorer.litecoinca.sh/tx/"
+		"txURL": "https://explorer.litecoinca.sh/tx/",
+		"blockURL": "https://explorer.litecoinca.sh/block/"
 	}
 }

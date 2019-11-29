@@ -6,6 +6,7 @@
 	"peerMagic": "fabfb5da",
 	"peerMagicTestnet": "76657274",
 	"explorer": {
-		"txURL": "https://insight.vertcoin.org/tx/"
+		"txURL": "https://insight.vertcoin.org/tx/",
+		"blockURL": "https://insight.vertcoin.org/block/"
 	}
 }

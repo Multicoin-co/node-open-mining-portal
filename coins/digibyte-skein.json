@@ -7,6 +7,7 @@
 	"peerMagicTestnet": "fdc8bddd",
 	"passAlgorithm": true,
 	"explorer": {
-		"txURL": "https://digiexplorer.info/tx/"
+		"txURL": "https://digiexplorer.info/tx/",
+		"blockURL": "https://digiexplorer.info/block/"
 	}
 }

@@ -5,6 +5,7 @@
 	"peerMagic": "c0c0c0c0",
 	"peerMagicTestnet": "fcc1b7dc",
 	"explorer": {
-		"txURL": "https://dogechain.info/tx/"
+		"txURL": "https://dogechain.info/tx/",
+		"blockURL": "https://dogechain.info/block/"
 	}
 }

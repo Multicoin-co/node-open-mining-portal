@@ -6,6 +6,7 @@
 	"peerMagic": "5241564e",
 	"peerMagicTestnet": "52564e54",
 	"explorer": {
-		"txURL": "https://ravencoin.network/tx/"
+		"txURL": "https://ravencoin.network/tx/",
+		"blockURL": "https://ravencoin.network/block/"
 	}
 }

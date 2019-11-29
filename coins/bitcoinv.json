@@ -6,6 +6,7 @@
 	"peerMagic": "f5b4f3a2",
 	"peerMagicTestnet": "f5b4f3a2",
 	"explorer": {
-		"txURL": "http://explorer.bitcoinv.org/tx/"
+		"txURL": "http://explorer.bitcoinv.org/tx/",
+		"blockURL": "http://explorer.bitcoinv.org/block/"
 	}
 }

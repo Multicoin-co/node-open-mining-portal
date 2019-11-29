@@ -6,6 +6,7 @@
 	"peerMagic": "f9beb4d9",
 	"peerMagicTestnet": "0b110907",
 	"explorer": {
-		"txURL": "https://insight.bitpay.com/tx/"
+		"txURL": "https://insight.bitpay.com/tx/",
+		"blockURL": "https://insight.bitpay.com/block/"
 	}
 }

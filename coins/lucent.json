@@ -8,7 +8,8 @@
 	"peerMagicTestnet": "cee2caff",
 	"version_mask": "1fffe000",
 	"explorer": {
-		"txURL": "http://mnpro.mascsolutions.uk:3018/tx/"
+		"txURL": "http://mnpro.mascsolutions.uk:3018/tx/",
+		"blockURL": "http://mnpro.mascsolutions.uk:3018/block/"
 	}
 }
 

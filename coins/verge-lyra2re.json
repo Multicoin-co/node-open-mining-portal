@@ -9,6 +9,7 @@
 	"getInfo": true,
 	"getAllNetworkHashPS": true,
 	"explorer": {
-		"txURL": "https://verge-blockchain.info/tx/"
+		"txURL": "https://verge-blockchain.info/tx/",
+		"blockURL": "https://verge-blockchain.info/block/"
 	}
 }

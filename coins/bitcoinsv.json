@@ -7,6 +7,7 @@
 	"peerMagicTestnet": "f4e5f3f4",
 	"version_mask": "1fffe000",
 	"explorer": {
-		"txURL": "https://bchsvexplorer.com/tx/"
+		"txURL": "https://bchsvexplorer.com/tx/",
+		"blockURL": "https://bchsvexplorer.com/block/"
 	}
 }

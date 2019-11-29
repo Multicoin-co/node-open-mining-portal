@@ -8,6 +8,7 @@
 	"getAllNetworkHashPS": true,
 	"version_mask": "1fffe000",
 	"explorer": {
-		"txURL": "http://insight.auroracoin.is/tx/"
+		"txURL": "http://insight.auroracoin.is/tx/",
+		"blockURL": "http://insight.auroracoin.is/block/"
 	}
 }

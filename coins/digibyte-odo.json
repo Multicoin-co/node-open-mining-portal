@@ -8,6 +8,7 @@
 	"passAlgorithm": true,
 	"shapechangeInterval": 864000,
 	"explorer": {
-		"txURL": "https://digiexplorer.info/tx/"
+		"txURL": "https://digiexplorer.info/tx/",
+		"blockURL": "https://digiexplorer.info/block/"
 	}
 }

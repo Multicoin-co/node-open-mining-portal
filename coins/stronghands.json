@@ -10,7 +10,8 @@
 	"noNetworkInfo": true,
 	"getNetworkGHPS": true,
 	"explorer": {
-		"txURL": "https://www.coinexplorer.net/SHND/transaction/"
+		"txURL": "https://www.coinexplorer.net/SHND/transaction/",
+		"blockURL": "https://www.coinexplorer.net/SHND/block/"
 	}
 }
 

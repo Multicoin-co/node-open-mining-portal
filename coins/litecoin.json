@@ -6,6 +6,7 @@
 	"peerMagic": "fbc0b6db",
 	"peerMagicTestnet": "fdd2c8f1",
 	"explorer": {
-		"txURL": "https://insight.litecore.io/tx/"
+		"txURL": "https://insight.litecore.io/tx/",
+		"blockURL": "https://insight.litecore.io/block/"
 	}
 }

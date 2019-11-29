@@ -8,6 +8,7 @@
 	"passAlgorithm": "sha256d",
 	"version_mask": "1fffe000",
 	"explorer": {
-		"txURL": "https://digiexplorer.info/tx/"
+		"txURL": "https://digiexplorer.info/tx/",
+		"blockURL": "https://digiexplorer.info/block/"
 	}
 }
