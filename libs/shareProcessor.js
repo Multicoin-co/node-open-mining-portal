@@ -104,7 +104,7 @@ module.exports = function(logger, poolConfig){
             if (err)
                 logger.error(logSystem, logComponent, logSubCat, 'Error with share processor multi ' + JSON.stringify(err));
 
-            if (poolConfig.foundBlockWebhook) {
+            if (isValidBlock && poolConfig.foundBlockWebhook) {
                 try {
                     var postData = JSON.stringify({
                         miner: shareData.worker,
