@@ -414,7 +414,8 @@ module.exports = function(logger, portalConfig, poolConfigs){
                             name: coinName,
                             symbol: poolConfigs[coinName].coin.symbol.toUpperCase(),
                             algorithm: poolConfigs[coinName].coin.algorithm,
-                            poolFees: poolConfigs[coinName].rewardRecipients,
+                            prop_fee: poolConfigs[coinName].rewardRecipients,
+                            solo_fee: poolConfigs[coinName].rewardRecipients,
                             minimumPayment: poolConfigs[coinName].paymentProcessing.minimumPayment,
                             hashrates: replies[i + 1],
                             poolStats: {
@@ -497,7 +498,7 @@ module.exports = function(logger, portalConfig, poolConfigs){
                     var worker = parts[1];
                     var diff = Math.round(parts[0] * 8192);
                     var lastShare = parseInt(parts[2]);
-                    var mode = parts[3] || 'PPS';
+                    var mode = parts[3] || 'PROP';
                     if (workerShares > 0) {
                         coinStats[mode !== 'SOLO' ? 'shares' : 'soloshares'] += workerShares;
 

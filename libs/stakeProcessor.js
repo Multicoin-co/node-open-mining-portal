@@ -754,14 +754,14 @@ module.exports = function(logger, poolConfig){
            doesn't overwrite an existing entry, and timestamp as score lets us query shares from last X minutes to
            generate hashrate for each worker and pool. */
         var dateNow = Date.now();
-        var hashrateData = [ isValidShare ? shareData.difficulty : -shareData.difficulty, shareData.worker, dateNow, shareData.isSoloMining ? 'SOLO' : 'PPS'];
+        var hashrateData = [ isValidShare ? shareData.difficulty : -shareData.difficulty, shareData.worker, dateNow, shareData.isSoloMining ? 'SOLO' : 'PROP'];
         redisCommands.push(['zadd', coin + ':hashrate', dateNow / 1000 | 0, hashrateData.join(':')]);
 
         if (isValidBlock){
             if (!shareData.isSoloMining) {
                 redisCommands.push(['rename', coin + ':shares:roundCurrent', coin + ':shares:round' + shareData.height]);
             }
-            redisCommands.push(['sadd', coin + ':blocksPending', [shareData.blockHash, shareData.txHash, shareData.height, shareData.worker, dateNow / 1000 | 0, shareData.isSoloMining ? 'SOLO' : 'PPS'].join(':')]);
+            redisCommands.push(['sadd', coin + ':blocksPending', [shareData.blockHash, shareData.txHash, shareData.height, shareData.worker, dateNow / 1000 | 0, shareData.isSoloMining ? 'SOLO' : 'PROP'].join(':')]);
             redisCommands.push(['hincrby', coin + ':stats', 'validBlocks', 1]);
         }
         else if (shareData.blockHash){
