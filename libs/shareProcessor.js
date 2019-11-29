@@ -112,7 +112,7 @@ module.exports = function(logger, poolConfig){
                         url: poolConfig.coin.explorer.blockURL + shareData.blockHash
                     });
 
-                    var postRequest = http.request(poolConfig.foundBlockWebhook.replace('{coin}', poolOptions.coin.name), {
+                    var postRequest = http.request(poolConfig.foundBlockWebhook.replace('{coin}', poolConfig.coin.name), {
                         method: 'POST',
                         headers: {
                             'content-type': 'application/json',
