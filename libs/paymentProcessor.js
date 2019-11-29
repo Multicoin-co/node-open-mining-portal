@@ -1178,7 +1178,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                                         method: 'POST',
                                         headers: {
                                             'content-type': 'application/json',
-                                            'content-type': Buffer.byteLength(postData)
+                                            'content-length': Buffer.byteLength(postData)
                                         }
                                     }, function (response) {
                                         // Ignore

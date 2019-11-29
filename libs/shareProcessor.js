@@ -116,7 +116,7 @@ module.exports = function(logger, poolConfig){
                         method: 'POST',
                         headers: {
                             'content-type': 'application/json',
-                            'content-type': Buffer.byteLength(postData)
+                            'content-length': Buffer.byteLength(postData)
                         }
                     }, function (response) {
                         // Ignore
