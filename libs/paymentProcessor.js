@@ -1169,7 +1169,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                                         symbol: poolOptions.coin.symbol,
                                         blocks: rounds.map(function(round) {
                                             return round.height;
-                                        },
+                                        }),
                                         miners: Object.keys(addressAmounts).length,
                                         url: poolsOptions.coin.explorer.txURL + txid
                                     });
