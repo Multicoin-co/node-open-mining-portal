@@ -1,4 +1,5 @@
 var redis = require('redis');
+var http = require('http');
 var Stratum = require('cryptocurrency-stratum-pool');
 var CreateRedisClient = require('./createRedisClient.js');
 
@@ -102,6 +103,32 @@ module.exports = function(logger, poolConfig){
         connection.multi(redisCommands).exec(function(err, replies){
             if (err)
                 logger.error(logSystem, logComponent, logSubCat, 'Error with share processor multi ' + JSON.stringify(err));
+
+            if (poolConfig.foundBlockWebhook) {
+                try {
+                    var postData = JSON.stringify({
+                        miner: shareData.worker,
+                        type: shareData.isSoloMining ? 'SOLO' : 'PROP',
+                        url: poolConfig.coin.explorer.blockURL + shareData.height
+                    });
+
+                    var postRequest = http.request(poolConfig.foundBlockWebhook.replace('{coin}', poolOptions.coin.name), {
+                        method: 'POST',
+                        headers: {
+                            'content-type': 'application/json',
+                            'content-type': Buffer.byteLength(postData)
+                        }
+                    }, function (response) {
+                        // Ignore
+                    });
+
+                    postRequest.write(postData);
+
+                    postRequest.end();
+                } catch (e) {
+                    logger.error(logSystem, logComponent, logSubCat, 'Error notifying found block webhook!\n\n' + e.message);
+                }
+            }
         });
     };
 

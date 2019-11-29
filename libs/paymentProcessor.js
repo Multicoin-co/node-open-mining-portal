@@ -3,6 +3,8 @@ var fs = require('fs');
 var redis = require('redis');
 var async = require('async');
 
+var http = require('http');
+
 var Stratum = require('cryptocurrency-stratum-pool');
 var util = require('cryptocurrency-stratum-pool/lib/util.js');
 var CreateRedisClient = require('./createRedisClient.js');
@@ -1160,6 +1162,35 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                             var txid = result.response;
 
                             logger.special(logSystem, logComponent, 'Sent ' + satoshisToCoins(totalSent) + ' to ' + Object.keys(addressAmounts).length + ' miners; txid: ' + txid);
+                            if (poolOptions.sentPaymentWebhook) {
+                                try {
+                                    var postData = JSON.stringify({
+                                        amount: satoshisToCoins(totalSent),
+                                        symbol: poolOptions.coin.symbol,
+                                        blocks: rounds.map(function(round) {
+                                            return round.height;
+                                        },
+                                        miners: Object.keys(addressAmounts).length,
+                                        url: poolsOptions.coin.explorer.txURL + txid
+                                    });
+
+                                    var postRequest = http.request(poolOptions.sentPaymentWebhook.replace('{coin}', poolOptions.coin.name), {
+                                        method: 'POST',
+                                        headers: {
+                                            'content-type': 'application/json',
+                                            'content-type': Buffer.byteLength(postData)
+                                        }
+                                    }, function (response) {
+                                        // Ignore
+                                    });
+
+                                    postRequest.write(postData);
+
+                                    postRequest.end();
+                                } catch (e) {
+                                    logger.error(logSystem, logComponent, 'Error notifying payment webhook!\n\n' + e.message);
+                                }
+                            }
 
                             if (withholdPercent > 0) {
                                 logger.warning(logSystem, logComponent, 'Had to withhold ' + (withholdPercent * 100)
