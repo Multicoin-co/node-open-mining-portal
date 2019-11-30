@@ -1162,14 +1162,17 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                             var txid = result.response;
 
                             logger.special(logSystem, logComponent, 'Sent ' + satoshisToCoins(totalSent) + ' to ' + Object.keys(addressAmounts).length + ' miners; txid: ' + txid);
+
+                            var paymentBlocks = rounds.filter(function(r) { return r.category === 'generate'; }).map(function(r) {
+                                return parseInt(r.height);
+                            });
+
                             if (poolOptions.sentPaymentWebhook) {
                                 try {
                                     var postData = JSON.stringify({
                                         amount: satoshisToCoins(totalSent),
                                         symbol: poolOptions.coin.symbol,
-                                        blocks: rounds.map(function(round) {
-                                            return round.height;
-                                        }),
+                                        blocks: paymentBlocks,
                                         miners: Object.keys(addressAmounts).length,
                                         url: poolOptions.coin.explorer.txURL + txid
                                     });
@@ -1199,10 +1202,6 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                             }
 
                             // save payments data to redis
-                            var paymentBlocks = rounds.filter(function(r){ return r.category == 'generate'; }).map(function(r){
-                                return parseInt(r.height);
-                            });
-
                             var paymentsUpdate = [];
                             var paymentsData = {time:Date.now(), txid:txid, shares:totalShares, paid:satoshisToCoins(totalSent),  miners:Object.keys(addressAmounts).length, blocks: paymentBlocks, amounts: addressAmounts, balances: balanceAmounts, work:shareAmounts};
                             paymentsUpdate.push(['zadd', logComponent + ':payments', Date.now(), JSON.stringify(paymentsData)]);
