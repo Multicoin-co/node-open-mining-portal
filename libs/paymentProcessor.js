@@ -1171,7 +1171,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                                             return round.height;
                                         }),
                                         miners: Object.keys(addressAmounts).length,
-                                        url: poolsOptions.coin.explorer.txURL + txid
+                                        url: poolOptions.coin.explorer.txURL + txid
                                     });
 
                                     var postRequest = http.request(poolOptions.sentPaymentWebhook.replace('{coin}', poolOptions.coin.name), {
