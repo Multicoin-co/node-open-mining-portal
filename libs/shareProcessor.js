@@ -109,6 +109,7 @@ module.exports = function(logger, poolConfig){
                     var postData = JSON.stringify({
                         miner: shareData.worker,
                         type: shareData.isSoloMining ? 'SOLO' : 'PROP',
+                        height: shareData.height,
                         url: poolConfig.coin.explorer.blockURL + shareData.blockHash
                     });
 
