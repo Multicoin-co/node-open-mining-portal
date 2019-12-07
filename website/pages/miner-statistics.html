@@ -1,3 +1,3 @@
-<amp-iframe layout="responsive" sandbox="allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts allow-top-navigation" src="https://api.cryptopools.aod-tech.com/static/miner-statistics-content.html?address={{=String(it.stats.address).split(".")[0]}}" width="1160" height="900" frameborder="0">
+<amp-iframe layout="responsive" sandbox="allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts allow-top-navigation" src="{{= it.portalConfig.iframeBaseURL }}/static/miner-statistics-content.html?address={{=String(it.stats.address).split(".")[0]}}" width="1160" height="900" frameborder="0">
     <div placeholder></div>
 </amp-iframe>
