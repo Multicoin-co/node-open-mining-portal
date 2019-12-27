@@ -1,0 +1,12 @@
+{
+	"name": "Beyondcoin",
+	"symbol": "BYND",
+	"algorithm": "scrypt",
+	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
+	"peerMagic": "9cd2c0a7",
+	"peerMagicTestnet": "b7e2d781",
+	"explorer": {
+		"txURL": "https://byndexplorer.com/tx/",
+		"blockURL": "https://byndexplorer.com/block/"
+	}
+}

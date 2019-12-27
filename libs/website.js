@@ -287,6 +287,9 @@ module.exports = function(logger) {
 				case 'aur':
 					protocol = 'auroracoin';
 					break;
+				case 'bynd':
+					protocol = 'beyondcoin';
+					break;
 				case 'btc':
 					protocol = 'bitcoin';
 					break;
