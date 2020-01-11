@@ -5,7 +5,7 @@
 	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
 	"isZCashProtocol": true,
 	"sapling": 227520,
-	"txfee": 0.0005,
+	"txfee": 0.0,
 	"requireShielding": true,
 	"explorer": {
 		"txURL": "https://explorer.veruscoin.io/tx/",
