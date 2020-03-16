@@ -1,0 +1,8 @@
+{
+	"name": "Ring",
+	"symbol": "RNG",
+	"algorithm": "minotaur",
+	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
+	"peerMagic": "cefe839a",
+	"peerMagicTestnet": "b2c4b793"
+}

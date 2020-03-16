@@ -323,6 +323,9 @@ module.exports = function(logger) {
 				case 'lcnt':
 					protocol = 'lucent';
 					break;
+				case 'rng':
+					protocol = 'ring';
+					break;
 				case 'rvn':
 					protocol = 'raven';
 					break;

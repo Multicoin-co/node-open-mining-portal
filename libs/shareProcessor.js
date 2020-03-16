@@ -110,7 +110,7 @@ module.exports = function(logger, poolConfig){
                         miner: shareData.worker,
                         type: shareData.isSoloMining ? 'SOLO' : 'PROP',
                         height: shareData.height,
-                        url: poolConfig.coin.explorer.blockURL + shareData.blockHash
+                        url: poolConfig.coin.explorer && poolConfig.coin.explorer.blockURL ? poolConfig.coin.explorer.blockURL + shareData.blockHash : ''
                     });
 
                     var postRequest = http.request(poolConfig.foundBlockWebhook.replace('{coin}', poolConfig.coin.name), {

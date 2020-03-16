@@ -11,7 +11,7 @@ NOMP_HOST=127.0.0.1:17117
 #echo "BlockNotify: $NOMP_HOST $NOMP_COIN $NOMP_HASH" >> /var/log/crypto-pool.blocknotify.log
 
 case $NOMP_COIN in
-	bitcoin|dash|dogecoin|horizen|litecoin|lucent|raven|stronghands|vertcoin|veruscoin|zero)
+	bitcoin|dash|dogecoin|horizen|litecoin|lucent|raven|ring|stronghands|vertcoin|veruscoin|zero)
 		/opt/cryptocurrency/nomp/scripts/blocknotify $NOMP_HOST $NOMP_COIN $NOMP_HASH
 		;;
 	bitcoincash)

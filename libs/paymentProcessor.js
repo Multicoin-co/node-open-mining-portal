@@ -1174,7 +1174,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                                         symbol: poolOptions.coin.symbol,
                                         blocks: paymentBlocks,
                                         miners: Object.keys(addressAmounts).length,
-                                        url: poolOptions.coin.explorer.txURL + txid
+                                        url: poolOptions.coin.explorer && poolOptions.coin.explorer.txURL ? poolOptions.coin.explorer.txURL + txid : ''
                                     });
 
                                     var postRequest = http.request(poolOptions.sentPaymentWebhook.replace('{coin}', poolOptions.coin.name), {
