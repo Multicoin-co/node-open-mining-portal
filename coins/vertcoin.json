@@ -1,8 +1,7 @@
 {
 	"name": "Vertcoin",
 	"symbol": "VTC",
-	"algorithm": "lyra2v3",
-	"coinbase": "Crypto Pools by AoD Technologies LLC - https://cryptopools.aod-tech.com",
+	"algorithm": "verthash",
 	"peerMagic": "fabfb5da",
 	"peerMagicTestnet": "76657274",
 	"explorer": {
