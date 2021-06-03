@@ -10,8 +10,14 @@ website featuring mining/staking instructions and in-depth live statistics.
 This is beta software. All of the following are things that can change and break an existing server setup: functionality of any feature, structure of configuration files and structure of redis data.
 If you use this software in production then *DO NOT* pull new code straight into production usage because it can and often will break your setup and require you to tweak things like config files or redis data.
 
+#### Setting up Vertcoin
+The same setup instructions apply as for other coins, with the exception that your verthash.dat must live inside the node-open-mining-portal folder.
+If you have trouble with dependencies, please cd into node_modules/<module causing an issue> and run npm install for each one
+ 
+- Donation address coming soon
+ 
 #### Paid Solution
-Usage of this software requires abilities with sysadmin, database admin, coin daemons, and sometimes a bit of programming. Running a production pool can literally be more work than a full-time job. 
+I offer a paid-setup solution on fiver. Click here to [View](https://www.fiverr.com/ahmedbodi/setup-a-cryptocurrency-mining-pool)
 
 **Coin switching & auto-exchanging for payouts in BTC/LTC** to miners is a feature that very likely will not be included in this project. 
 
@@ -496,34 +502,11 @@ the `cryptocurrency-stratum-pool` and `node-multi-hashing` modules, and any conf
 * Run `npm install` to force updating/reinstalling of the dependencies.
 * Compare your `config.json` and `pool_configs/coin.json` configurations to the latest example ones in this repo or the ones in the setup instructions where each config field is explained. You may need to modify or add any new changes.
 
-Donations
----------
-To support development of this project feel free to donate :)
-
-* AUR: `AStZjnHVZeeMu6qSefmfFf2hcTrw1D4PTV`
-* BTC: `1HTNmSPrPzWDXiQKHqGGmwxvWpo92861We`
-* BCH: `qz37lsgu585sthyvj03wdnylzj697utezs09sqr8s6`
-* BOOT: `RKrEC2DN85DEAVGnPKFMT2kwBop7W8SgtH`
-* BSV: `16pw6eWNQ543djFGPFhWTupKn6DAFybsYj`
-* BTCV: `3Cc2odLwAPMb8in6DtzYcaz7VteMHCdCWS`
-* DASH: `XptCKDUpStArP6WriH1EqUFkG7X4EB5QVb`
-* DGB: `DNvszcyDbQbSJ6aFGXCc4adSXoXjtFSXYs`
-* DOGE: `DEiAhRD6ACGeEHPAhKT4W4WiUN6Q85BK83`
-* LTC: `LQg8JcRgHUST9D2pD6fXXSCRsF9jD3GdWK`
-* LCC: `CJRx4ps1B8f3fByneiAg7oycEMtTtbFkG2`
-* LCNT: `Lfe93Y8mC1ueKpHtWw2Kp6APoLQs3GpGpF`
-* RVN: `RMTcqUJnzSTMZW825eP77yDxhcCuW3xVyy`
-* SHND: `SZjpJRp5rmD83NmaStVJpn4NkfmwM52Jnw`
-* VTC: `3KxFSn2hw7G61QyheKLYR5sffR6ErKJNys`
-* VRSC: `RRb1GeiDcbAGMJQrckCcFSnKj9rZDUVJ4y`
-* XVG: `D5Xzq6edmskQBVHUZuzvCbuAg1f8gPU2bo`
-* ZEN: `znhHi2eiRAQhzekktTqdjDBCeb3L2QkuHjf`
-* ZER: `t1R3enmEZj8rVsUG19sznLSkCRFFj4vEcVM`
-
 Credits
 -------
 * [Invader444](//github.com/Invader444) - lead developer
 * [The NOMP developers](//github.com/zone117x/node-stratum-pool#credits)
+* [Numski] Vertcoinpool.com operator
 
 License
 -------
