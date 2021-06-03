@@ -14,7 +14,15 @@ If you use this software in production then *DO NOT* pull new code straight into
 The same setup instructions apply as for other coins, with the exception that your verthash.dat must live inside the node-open-mining-portal folder.
 If you have trouble with dependencies, please cd into node_modules/<module causing an issue> and run npm install for each one
  
-- Donation address coming soon
+- Donation addresses:
+* BTC: 3BvKanhQwU8C2ZR1y42DHQEKC5yT1X5zjW
+* DASH: XiY5o2Zw9vfxxBD7nbNpKgfpLCCewoHWWG
+* DOGE: DL8bJPzn5i3tH6YdN3eV6ZFuHGc7UMUR3D
+* LTC: MMyUZLuvvNHocpqLZwqAik4rVWY1KSVFKc
+* VTC: 3ChMeULCfCSSmUQKTAvTujjb4DZn2MKKD7
+* ETH: 0x03203fcb30774703d684FD3Ec5A4f9De39C8f907
+* ETC: 0x62A12D574167d37713294fB82D9157aC511F264a
+* DGB: Sb5Q8RwQWLi9e2Cjxs8inaDw9RzKTKeEs1
  
 #### Paid Solution
 I offer a paid-setup solution on fiver. Click here to [View](https://www.fiverr.com/ahmedbodi/setup-a-cryptocurrency-mining-pool)
